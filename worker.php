@@ -3,7 +3,7 @@
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
-    header("Location: ../installer");
+    header("Location: installer");
     exit;
 }
 
@@ -38,7 +38,7 @@ if (isset($_POST["id"])) {
 if (isset($_POST["action"])) {
     $action = $_POST["action"];
 } else {
-	die("Error: No action passed");
+	die("Error: No action passed!");
 }
 
 if ($action == "add") {
@@ -48,9 +48,9 @@ if ($action == "add") {
     mysql_query("INSERT INTO `Data` (`list`, `item`, `created`, `user`)
     VALUES (\"$list\",\"$item\",\"$created\",\"" . $_SESSION["lists_user"] . "\")");
 } elseif ($action == "addlist") {
-	$name = mysql_real_escape_string($_POST["name"]);
-	mysql_query("INSERT INTO `Lists` (`name`)
-	VALUES (\"$name\")");
+    $name = mysql_real_escape_string($_POST["name"]);
+    mysql_query("INSERT INTO `Lists` (`name`)
+    VALUES (\"$name\")");
 }  elseif ($action == "delete") {
     mysql_query("DELETE FROM `Data` WHERE `id` = \"$id\"");
 }  elseif ($action == "deletelist") {
