@@ -17,9 +17,6 @@ if (!isset($_SESSION["lists_user"])) {
     exit; 
 }
 
-//Set cookie so we dont constantly check for updates
-setcookie("thoughtsupdatecheck", time(), time()+604800);
-
 @$con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
 if (!$con) {
     die("Error: Could not connect to database (" . mysql_error() . "). Check your database settings are correct.");
@@ -30,7 +27,7 @@ if (!$con) {
     }
 }
 
-$getusersettings = mysql_query("SELECT `user`, `admin` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+$getusersettings = mysql_query("SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
 if (mysql_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
@@ -99,7 +96,7 @@ body {
 $getlists = mysql_query("SELECT * FROM `Lists`");
 
 while($row = mysql_fetch_assoc($getlists)) {
-	echo "<li class=\"list-group-item\"><span class=\"delete glyphicon glyphicon-remove pull-right\" data-id=\"" . $row["id"] . "\"></span><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a></li>";
+    echo "<li class=\"list-group-item\"><span class=\"delete glyphicon glyphicon-remove pull-right\" data-id=\"" . $row["id"] . "\"></span><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a></li>";
 }
 
 ?>      
@@ -129,15 +126,16 @@ $(document).ready(function() {
                             bootbox.alert("Ajax query failed!");
                         },
                         success: function() {
-		                    window.location.reload();
+                            window.location.reload();
                         }
                     });
                 }
             }
         });
     });
+    /* End */
     /* Delete */
-    $("li").on("click", ".delete", function() {        
+    $("li").on("click", ".delete", function() {
         var id = $(this).data("id");
         $.ajax({
             type: "POST",
