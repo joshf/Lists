@@ -47,7 +47,6 @@ if (isset($_GET["list"])) {
 <title>Lists</title>
 <link rel="apple-touch-icon" href="assets/icon.png">
 <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="assets/bootstrap-notify/css/bootstrap-notify.min.css" rel="stylesheet">
 <style type="text/css">
 body {
     padding-top: 30px;
@@ -117,26 +116,8 @@ if (mysql_num_rows($getitems) != 0) {
 <script src="assets/jquery.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="assets/bootbox.min.js"></script>
-<script src="assets/bootstrap-notify/js/bootstrap-notify.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    /* Set Up Notifications */
-    var show_notification = function(type, icon, text, reload) {
-        $(".top-right").notify({
-            type: type,
-            transition: "fade",
-            icon: icon,
-            message: {
-                text: text
-            },
-            onClosed: function() {
-                if (reload == true) {
-                    window.location.reload();
-                }
-            }
-        }).show();
-    };
-    /* End */
     /* Add */
     $("#add").click(function() {
         bootbox.prompt({
@@ -148,27 +129,28 @@ $(document).ready(function() {
                         url: "worker.php",
                         data: "action=add&list=<?php echo $list; ?>&item="+ item +"",
                         error: function() {
-                            show_notification("danger", "warning-sign", "Ajax query failed!");
+                            bootbox.alert("Ajax query failed!");
                         },
                         success: function() {
-		                    window.location.reload();
+                            window.location.reload();
                         }
                     });
                 }
             }
         });
     });
+    /* End */
     /* Delete */
-    $("li").on("click", ".delete", function() {        
+    $("li").on("click", ".delete", function() {
         var id = $(this).data("id");
         $.ajax({
             type: "POST",
             url: "worker.php",
             data: "action=delete&id="+ id +"",
             error: function() {
-                show_notification("danger", "warning-sign", "Ajax query failed!");
+                bootbox.alert("Ajax query failed!");
             },
-            success: function(d) {
+            success: function() {
                 window.location.reload();
             }
         });

@@ -48,15 +48,10 @@ $resultgetusersettings = mysql_fetch_assoc($getusersettings);
 <title>Lists</title>
 <link rel="apple-touch-icon" href="assets/icon.png">
 <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="assets/bootstrap-notify/css/bootstrap-notify.min.css" rel="stylesheet">
 <style type="text/css">
 body {
     padding-top: 30px;
     padding-bottom: 30px;
-}
-/* Fix weird notification appearance */
-a.close.pull-right {
-    padding-left: 10px;
 }
 </style>
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -118,26 +113,8 @@ Lists <?php echo $version; ?> &copy; <a href="http://github.com/joshf" target="_
 <script src="assets/jquery.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="assets/bootbox.min.js"></script>
-<script src="assets/bootstrap-notify/js/bootstrap-notify.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    /* Set Up Notifications */
-    var show_notification = function(type, icon, text, reload) {
-        $(".top-right").notify({
-            type: type,
-            transition: "fade",
-            icon: icon,
-            message: {
-                text: text
-            },
-            onClosed: function() {
-                if (reload == true) {
-                    window.location.reload();
-                }
-            }
-        }).show();
-    };
-    /* End */
     /* Add */
     $("#add").click(function() {
         bootbox.prompt({
@@ -149,7 +126,7 @@ $(document).ready(function() {
                         url: "worker.php",
                         data: "action=addlist&name="+ name +"",
                         error: function() {
-                            show_notification("danger", "warning-sign", "Ajax query failed!");
+                            bootbox.alert("Ajax query failed!");
                         },
                         success: function() {
 		                    window.location.reload();
@@ -167,7 +144,7 @@ $(document).ready(function() {
             url: "worker.php",
             data: "action=deletelist&id="+ id +"",
             error: function() {
-                show_notification("danger", "warning-sign", "Ajax query failed!");
+                bootbox.alert("Ajax query failed!");
             },
             success: function() {
                 window.location.reload();
