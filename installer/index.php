@@ -53,7 +53,7 @@ if (isset($_POST["install"])) {
     mysql_query($createdatatable);
 	
     //Create Lists table
-    $createdliststable = "CREATE TABLE `Lists` (
+    $createliststable = "CREATE TABLE `Lists` (
     `id` smallint(10) NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL,
     PRIMARY KEY (`id`)
@@ -68,15 +68,14 @@ if (isset($_POST["install"])) {
     `password` varchar(200) NOT NULL,
     `salt` varchar(3) NOT NULL,
     `email` varchar(100) NOT NULL,
-    `admin` tinyint(1) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=MyISAM;";
     
     mysql_query($createuserstable);
     
     //Add user
-    mysql_query("INSERT INTO Users (user, password, salt, email, admin)
-    VALUES (\"$user\",\"$password\",\"$salt\",\"$email\",\"1\")");
+    mysql_query("INSERT INTO Users (user, password, salt, email)
+    VALUES (\"$user\",\"$password\",\"$salt\",\"$email\")");
     
     //Write Config
     $configfile = fopen("../config.php", "w");
