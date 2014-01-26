@@ -95,8 +95,12 @@ body {
 
 $getlists = mysql_query("SELECT * FROM `Lists`");
 
-while($row = mysql_fetch_assoc($getlists)) {
-    echo "<li class=\"list-group-item\"><span class=\"delete glyphicon glyphicon-remove pull-right\" data-id=\"" . $row["id"] . "\"></span><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a></li>";
+if (mysql_num_rows($getlists) != 0) {
+    while($row = mysql_fetch_assoc($getlists)) {
+        echo "<li class=\"list-group-item\"><span class=\"delete glyphicon glyphicon-remove pull-right\" data-id=\"" . $row["id"] . "\"></span><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a></li>";
+    }
+} else {
+    echo "<li class=\"list-group-item\">No lists to show</li>";
 }
 
 ?>      
@@ -117,7 +121,7 @@ $(document).ready(function() {
         bootbox.prompt({
             title: "Add List",
             callback: function(name) {
-                if (name != "") {
+                if (name != null && name != "") {
                     $.ajax({
                         type: "POST",
                         url: "worker.php",

@@ -32,9 +32,16 @@ if (mysql_num_rows($getusersettings) == 0) {
 $resultgetusersettings = mysql_fetch_assoc($getusersettings);
 
 if (isset($_GET["list"])) {
-	$list = $_GET["list"];	
+	$list = mysql_real_escape_string($_GET["list"]);	
 } else {
 	die("Error: No list passed!");
+}
+
+//FIXME: PHP wont stop fucking complaining
+$listcheck = mysql_query("SELECT name FROM `Lists` WHERE id = $list");
+$resultlistcheck = mysql_fetch_assoc($listcheck);
+if (mysql_num_rows($listcheck) == 0) {
+    die("Error: List does not exist!");   
 }
 
 ?>
@@ -93,7 +100,7 @@ a.close.pull-right {
 </div>
 <div class="container">
 <div class="page-header">
-<h1>View List</h1>
+<h1>View <?php echo $resultlistcheck["name"]; ?> List</h1>
 </div>
 <div class="notifications top-right"></div>
 <ul class="list-group">
@@ -109,6 +116,8 @@ if (mysql_num_rows($getitems) != 0) {
     echo "<li class=\"list-group-item\">No items to show</li>";
 }
 
+mysql_close($con);
+
 ?>      
 </ul>
 <button type="button" id="add" class="btn btn-default">Add Item</button>
@@ -121,9 +130,9 @@ $(document).ready(function() {
     /* Add */
     $("#add").click(function() {
         bootbox.prompt({
-            title: "Add Item",
+            title: "Add Item to list",
             callback: function(item) {
-                if (item != "") {
+                if (item != null && item != "") {
                     $.ajax({
                         type: "POST",
                         url: "worker.php",
