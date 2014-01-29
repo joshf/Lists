@@ -37,12 +37,11 @@ if (isset($_GET["list"])) {
 	die("Error: No list passed!");
 }
 
-//FIXME: PHP wont stop fucking complaining
 $listcheck = mysql_query("SELECT name FROM `Lists` WHERE id = $list");
-$resultlistcheck = mysql_fetch_assoc($listcheck);
-if (mysql_num_rows($listcheck) == 0) {
+if($listcheck === FALSE) {
     die("Error: List does not exist!");   
 }
+$resultlistcheck = mysql_fetch_assoc($listcheck);
 
 ?>
 <!DOCTYPE html>
