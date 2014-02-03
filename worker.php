@@ -43,12 +43,12 @@ if (isset($_POST["action"])) {
 
 if ($action == "add") {
     $list = mysql_real_escape_string($_POST["list"]);
-    $item = mysql_real_escape_string($_POST["item"]);
+    $item = strip_tags(mysql_real_escape_string($_POST["item"]));
     $created = date("d/m/Y");
     mysql_query("INSERT INTO `Data` (`list`, `item`, `created`, `user`)
-    VALUES (\"$list\",\"$item\",\"$created\",\"" . $_SESSION["lists_user"] . "\")");
+    VALUES (\"$list\",\"$item\",\"$created\",\"" . $resultgetusersettings["user"] . "\")");
 } elseif ($action == "addlist") {
-    $name = mysql_real_escape_string($_POST["name"]);
+    $name = strip_tags(mysql_real_escape_string($_POST["name"]));
     mysql_query("INSERT INTO `Lists` (`name`)
     VALUES (\"$name\")");
 }  elseif ($action == "delete") {
