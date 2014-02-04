@@ -65,15 +65,10 @@ mysql_close($con);
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lists &middot; Settings</title>
 <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="assets/bootstrap-notify/css/bootstrap-notify.min.css" rel="stylesheet">
 <style type="text/css">
 body {
     padding-top: 30px;
     padding-bottom: 30px;
-}
-/* Fix weird notification appearance */
-a.close.pull-right {
-    padding-left: 10px;
 }
 </style>
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -114,7 +109,12 @@ a.close.pull-right {
 <div class="page-header">
 <h1>Settings</h1>
 </div>
-<div class="notifications top-right"></div>
+<div id="updated" style="display: none;">
+<div class="alert alert-info">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>   
+<strong>Info:</strong> Settings updated.  
+</div>
+</div>
 <form role="form" method="post" autocomplete="off">
 <h4>User Details</h4>
 <div class="form-group">
@@ -134,20 +134,12 @@ a.close.pull-right {
 </div>
 <script src="assets/jquery.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/bootstrap-notify/js/bootstrap-notify.min.js"></script>
 <script src="assets/jquery.cookie.min.js"></script>
 <script src="assets/nod.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     if ($.cookie("settings_updated")) {
-        $(".top-right").notify({
-            type: "info",
-            transition: "fade",
-            icon: "info-sign",
-            message: {
-                text: "Settings saved!"
-            }
-        }).show();
+        $("#updated").show("fast");
         $.removeCookie("settings_updated");
     }
     $("form").submit(function() {
