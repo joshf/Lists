@@ -97,7 +97,7 @@ $getlists = mysql_query("SELECT * FROM `Lists`");
 
 if (mysql_num_rows($getlists) != 0) {
     while($row = mysql_fetch_assoc($getlists)) {
-        echo "<li class=\"list-group-item\"><span class=\"delete glyphicon glyphicon-remove pull-right\" data-id=\"" . $row["id"] . "\"></span><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a></li>";
+        echo "<li class=\"list-group-item\"><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a><div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No lists to show</li>";
