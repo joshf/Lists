@@ -108,7 +108,7 @@ $getitems = mysql_query("SELECT * FROM `Data` WHERE list = $list");
 
 if (mysql_num_rows($getitems) != 0) {
     while($row = mysql_fetch_assoc($getitems)) {
-    	echo "<li class=\"list-group-item\"><span class=\"delete glyphicon glyphicon-remove pull-right\" data-id=\"" . $row["id"] . "\"></span>" . $row["item"] . "</li>";
+        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No items to show</li>";
