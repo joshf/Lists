@@ -50,6 +50,9 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
+.delete {
+    cursor: pointer;
+}
 </style>
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
