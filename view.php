@@ -100,7 +100,6 @@ body {
 <div class="page-header">
 <h1>View <?php echo $resultlistcheck["name"]; ?> List</h1>
 </div>
-<div class="notifications top-right"></div>
 <ul class="list-group">
 <?php
 

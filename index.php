@@ -92,7 +92,6 @@ body {
 <div class="page-header">
 <h1>My Lists</h1>
 </div>
-<div class="notifications top-right"></div>
 <ul class="list-group">
 <?php
 
