@@ -55,6 +55,13 @@ if ($action == "add") {
     mysql_query("DELETE FROM `Data` WHERE `id` = \"$id\"");
 }  elseif ($action == "deletelist") {
     mysql_query("DELETE FROM `Lists` WHERE `id` = \"$id\"");
+} elseif ($action == "info") {
+    $getinfo = mysql_query("SELECT * FROM `Data` WHERE `id` = \"$id\"");
+    $resultgetinfo = mysql_fetch_assoc($getinfo);
+    echo $resultgetinfo["item"];
+} elseif ($action == "edit") {
+    $item = strip_tags(mysql_real_escape_string($_POST["item"]));
+    mysql_query("UPDATE `Data` SET `item` = \"$item\" WHERE `id` = \"$id\"");
 }
 
 mysql_close($con);

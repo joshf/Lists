@@ -57,8 +57,8 @@ $resultlistcheck = mysql_fetch_assoc($listcheck);
 body {
     padding-top: 30px;
     padding-bottom: 30px;
-}
-.delete {
+    }
+.edit, .delete {
     cursor: pointer;
 }
 </style>
@@ -107,7 +107,7 @@ $getitems = mysql_query("SELECT * FROM `Data` WHERE list = $list");
 
 if (mysql_num_rows($getitems) != 0) {
     while($row = mysql_fetch_assoc($getitems)) {
-        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"edit glyphicon glyphicon-edit\" data-id=\"" . $row["id"] . "\"></span> <span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No items to show</li>";
@@ -142,6 +142,41 @@ $(document).ready(function() {
                         }
                     });
                 }
+            }
+        });
+    });
+    /* End */
+    /* Edit */
+    $("li").on("click", ".edit", function() {
+        var id = $(this).data("id");
+        /* Get Data first */
+        $.ajax({
+            type: "POST",
+            url: "worker.php",
+            data: "action=info&id="+ id +"",
+            error: function() {
+                bootbox.alert("Ajax query failed!");
+            },
+            success: function(info) {
+                bootbox.prompt({
+                    title: "Edit Item",
+                    value: info,
+                    callback: function(newitem) {
+                        if (newitem != null && newitem != "") {
+                            $.ajax({
+                                type: "POST",
+                                url: "worker.php",
+                                data: "action=edit&item="+ newitem +"&id="+ id +"",
+                                error: function() {
+                                    bootbox.alert("Ajax query failed!");
+                                },
+                                success: function() {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
     });
