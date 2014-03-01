@@ -57,7 +57,7 @@ $resultlistcheck = mysql_fetch_assoc($listcheck);
 body {
     padding-top: 30px;
     padding-bottom: 30px;
-    }
+}
 .edit, .delete {
     cursor: pointer;
 }
