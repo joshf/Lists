@@ -50,7 +50,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.delete {
+.delete, .colour {
     cursor: pointer;
 }
 </style>
@@ -99,7 +99,12 @@ $getlists = mysql_query("SELECT * FROM `Lists`");
 
 if (mysql_num_rows($getlists) != 0) {
     while($row = mysql_fetch_assoc($getlists)) {
-        echo "<li class=\"list-group-item\"><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a><div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        if ($row["colour"] != "") {
+            $colour = $row["colour"];
+        } else {
+            $colour = "FFFFFF";
+        }
+        echo "<li class=\"list-group-item\" style=\"background-color: #" . $colour . "\"><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a><div class=\"pull-right\"><span class=\"colour glyphicon glyphicon-adjust\" data-id=\"" . $row["id"] . "\" data-colour=\"" . $colour . "\"></span> <span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No lists to show</li>";
@@ -116,6 +121,7 @@ Lists <?php echo $version; ?> &copy; <a href="http://github.com/joshf" target="_
 <script src="assets/jquery.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="assets/bootbox.min.js"></script>
+<script src="assets/paintit.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     /* Add */
@@ -136,6 +142,44 @@ $(document).ready(function() {
                         }
                     });
                 }
+            }
+        });
+    });
+    /* End */
+    /* List Colour */
+    $("li").on("click", ".colour", function() {
+        var id = $(this).data("id");
+        bootbox.dialog({
+            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"FFFFFF\">None</option><option value=\"B3B3B3\">Grey</option><option value=\"d9534f\">Red</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"f0ad4e\">Yellow</option><option value=\"custom\">Custom...</option></select></div>",
+            title: "Choose List Colour",
+            buttons: {
+                main: {
+                    label: "Continue",
+                    className: "btn-primary",
+                    callback: function() {
+                        var colour = $("#colour").val()
+                        if (colour == "custom") {
+                            bootbox.hideAll();
+                            bootbox.prompt({
+                                title: "Add custom colour (#hex)",
+                                callback: function(colour) {
+                                    if (colour != null && colour != "") {
+                                        if (colour.length != "6") {
+                                            bootbox.alert("Invalid Hex!");
+                                            return false;
+                                        } else {
+                                            $(id).paintit(colour);
+                                        }
+                                        bootbox.hideAll();
+                                    }
+                                }
+                            });
+                            /* Halt first dialog */
+                            return false;
+                        }
+                        $(id).paintit(colour);            
+                    }
+                } 
             }
         });
     });

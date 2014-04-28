@@ -62,6 +62,9 @@ if ($action == "add") {
 } elseif ($action == "edit") {
     $item = strip_tags(mysql_real_escape_string($_POST["item"]));
     mysql_query("UPDATE `Data` SET `item` = \"$item\" WHERE `id` = \"$id\"");
+} elseif ($action == "listcolour") {
+    $colour = mysql_real_escape_string($_POST["colour"]);
+    mysql_query("UPDATE `Lists` SET `colour` = \"$colour\" WHERE `id` = \"$id\"");
 }
 
 mysql_close($con);
