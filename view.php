@@ -58,7 +58,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.edit, .delete {
+.delete {
     cursor: pointer;
 }
 </style>
@@ -107,7 +107,7 @@ $getitems = mysql_query("SELECT * FROM `Data` WHERE list = $list");
 
 if (mysql_num_rows($getitems) != 0) {
     while($row = mysql_fetch_assoc($getitems)) {
-        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"edit glyphicon glyphicon-edit\" data-id=\"" . $row["id"] . "\"></span> <span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No items to show</li>";
@@ -117,7 +117,13 @@ mysql_close($con);
 
 ?>      
 </ul>
-<button type="button" id="add" class="btn btn-default">Add Item</button>
+<form role="form" id="addform" method="post" autocomplete="off">
+<div class="form-group">
+<label for="item">Add Item</label>
+<input type="text" class="form-control" id="item" name="item" placeholder="Type a item..." required>
+</div>
+<button type="submit" class="btn btn-default">Add Item</button>
+</form>
 </div>
 <script src="assets/jquery.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
@@ -125,60 +131,23 @@ mysql_close($con);
 <script type="text/javascript">
 $(document).ready(function() {
     /* Add */
-    $("#add").click(function() {
-        bootbox.prompt({
-            title: "Add Item to list",
-            callback: function(item) {
-                if (item != null && item != "") {
-                    $.ajax({
-                        type: "POST",
-                        url: "worker.php",
-                        data: "action=add&list=<?php echo $list; ?>&item="+ item +"",
-                        error: function() {
-                            bootbox.alert("Ajax query failed!");
-                        },
-                        success: function() {
-                            window.location.reload();
-                        }
-                    });
+    $("#item").focus();
+    $("#addform").submit(function() {
+        var item = $("#item").val();
+        if (item != null && item != "") {
+            $.ajax({
+                type: "POST",
+                url: "worker.php",
+                data: "action=add&list=<?php echo $list; ?>&item="+ item +"",
+                error: function() {
+                    bootbox.alert("Ajax query failed!");
+                },
+                success: function() {
+                    window.location.reload();
                 }
-            }
-        });
-    });
-    /* End */
-    /* Edit */
-    $("li").on("click", ".edit", function() {
-        var id = $(this).data("id");
-        /* Get Data first */
-        $.ajax({
-            type: "POST",
-            url: "worker.php",
-            data: "action=info&id="+ id +"",
-            error: function() {
-                bootbox.alert("Ajax query failed!");
-            },
-            success: function(info) {
-                bootbox.prompt({
-                    title: "Edit Item",
-                    value: info,
-                    callback: function(newitem) {
-                        if (newitem != null && newitem != "") {
-                            $.ajax({
-                                type: "POST",
-                                url: "worker.php",
-                                data: "action=edit&item="+ newitem +"&id="+ id +"",
-                                error: function() {
-                                    bootbox.alert("Ajax query failed!");
-                                },
-                                success: function() {
-                                    window.location.reload();
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        });
+            });
+            return false;
+        }
     });
     /* End */
     /* Delete */

@@ -112,7 +112,13 @@ if (mysql_num_rows($getlists) != 0) {
 
 ?>      
 </ul>
-<button type="button" id="add" class="btn btn-default">Add List</button>
+<form role="form" id="addform" method="post" autocomplete="off">
+<div class="form-group">
+<label for="item">Add List</label>
+<input type="text" class="form-control" id="list" name="list" placeholder="Type a new list..." required>
+</div>
+<button type="submit" class="btn btn-default">Add List</button>
+</form>
 <hr>
 <div class="footer">
 Lists <?php echo $version; ?> &copy; <a href="http://github.com/joshf" target="_blank">Josh Fradley</a> <?php echo date("Y"); ?>. Themed by <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>.
@@ -125,58 +131,37 @@ Lists <?php echo $version; ?> &copy; <a href="http://github.com/joshf" target="_
 <script type="text/javascript">
 $(document).ready(function() {
     /* Add */
-    $("#add").click(function() {
-        bootbox.prompt({
-            title: "Add List",
-            callback: function(name) {
-                if (name != null && name != "") {
-                    $.ajax({
-                        type: "POST",
-                        url: "worker.php",
-                        data: "action=addlist&name="+ name +"",
-                        error: function() {
-                            bootbox.alert("Ajax query failed!");
-                        },
-                        success: function() {
-                            window.location.reload();
-                        }
-                    });
+    $("#list").focus();
+    $("#addform").submit(function() {
+        var list = $("#list").val();
+        if (list != null && list != "") {
+            $.ajax({
+                type: "POST",
+                url: "worker.php",
+                data: "action=addlist&name="+ list +"",
+                error: function() {
+                    bootbox.alert("Ajax query failed!");
+                },
+                success: function() {
+                    window.location.reload();
                 }
-            }
-        });
+            });
+            return false;
+        }
     });
     /* End */
     /* List Colour */
     $("li").on("click", ".colour", function() {
         var id = $(this).data("id");
         bootbox.dialog({
-            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"FFFFFF\">None</option><option value=\"B3B3B3\">Grey</option><option value=\"d9534f\">Red</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"f0ad4e\">Yellow</option><option value=\"custom\">Custom...</option></select></div>",
+            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"FFFFFF\">None</option><option value=\"B3B3B3\">Grey</option><option value=\"d9534f\">Red</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"f0ad4e\">Yellow</option></select></div>",
             title: "Choose List Colour",
             buttons: {
                 main: {
-                    label: "Continue",
+                    label: "Set",
                     className: "btn-primary",
                     callback: function() {
                         var colour = $("#colour").val()
-                        if (colour == "custom") {
-                            bootbox.hideAll();
-                            bootbox.prompt({
-                                title: "Add custom colour (#hex)",
-                                callback: function(colour) {
-                                    if (colour != null && colour != "") {
-                                        if (colour.length != "6") {
-                                            bootbox.alert("Invalid Hex!");
-                                            return false;
-                                        } else {
-                                            $(id).paintit(colour);
-                                        }
-                                        bootbox.hideAll();
-                                    }
-                                }
-                            });
-                            /* Halt first dialog */
-                            return false;
-                        }
                         $(id).paintit(colour);            
                     }
                 } 
