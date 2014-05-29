@@ -1,12 +1,15 @@
 Lists Readme
 ========================
 
-Lists is a simple app to make lists of things you need to remember. Based on code from Burden, Lists provides an attractive way to manage multiple lists and supports multiple users (W.I.P)
+Lists is a simple app to make lists of things you need to remember. Based on code from Burden, Lists provides an attractive way to manage multiple lists and supports multiple users.
 
 Features:
 ---------
 
 * Multiple lists
+* Assign lists different colours
+* Works well on mobile devices due to a responsive layout
+* Multiple users (coming soon)
 
 Donations:
 ------------
@@ -33,6 +36,10 @@ Installation:
 
 Usage:
 ------
+
+To add a new list, simply type the name of the list you want in the box at the bottom of the page and click Add List or hit enter. To add items to lists click the list you want and enter the new item at the bottom of the page. Once done click Add Item or hit enter.
+
+To delete a list or an item from a list click the "x" on the right hand side. To change the colour of a list click the half shaded icon next to the delete button on a list.
 
 Updating:
 ---------
