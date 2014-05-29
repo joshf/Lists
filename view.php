@@ -105,9 +105,12 @@ body {
 
 $getitems = mysql_query("SELECT * FROM `Data` WHERE list = $list");
 
+$count = "0";
+
 if (mysql_num_rows($getitems) != 0) {
     while($row = mysql_fetch_assoc($getitems)) {
         echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        $count++;
     }
 } else {
     echo "<li class=\"list-group-item\">No items to show</li>";
@@ -166,6 +169,7 @@ $(document).ready(function() {
         });
     });
     /* End */
+    document.title = "Lists · <?php echo $resultlistcheck["name"]; ?> (<?php echo $count; ?>)";
 });
 </script>
 </body>
