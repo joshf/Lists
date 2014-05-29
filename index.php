@@ -121,7 +121,7 @@ if (mysql_num_rows($getlists) != 0) {
 </form>
 <hr>
 <div class="footer">
-Lists <?php echo $version; ?> &copy; <a href="http://github.com/joshf" target="_blank">Josh Fradley</a> <?php echo date("Y"); ?>. Themed by <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>.
+Lists <?php echo $version; ?> &copy; <a href="http://joshf.co.uk" target="_blank">Josh Fradley</a> <?php echo date("Y"); ?>. Themed by <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>.
 </div>
 </div>
 <script src="assets/jquery.min.js"></script>
