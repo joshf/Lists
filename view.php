@@ -16,32 +16,30 @@ if (!isset($_SESSION["lists_user"])) {
 }
 
 //Connect to database
-@$con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
-if (!$con) {
-    die("Error: Could not connect to database (" . mysql_error() . "). Check your database settings are correct.");
+@$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+if (mysqli_connect_errno()) {
+    die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-mysql_select_db(DB_NAME, $con);
-
-$getusersettings = mysql_query("SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
-if (mysql_num_rows($getusersettings) == 0) {
+$getusersettings = mysqli_query($con, "SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+if (mysqli_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
     exit;
 }
-$resultgetusersettings = mysql_fetch_assoc($getusersettings);
+$resultgetusersettings = mysqli_fetch_assoc($getusersettings);
 
 if (isset($_GET["list"])) {
-	$list = mysql_real_escape_string($_GET["list"]);	
+	$list = mysqli_real_escape_string($con, $_GET["list"]);	
 } else {
 	die("Error: No list passed!");
 }
 
-$listcheck = mysql_query("SELECT name FROM `Lists` WHERE id = $list");
+$listcheck = mysqli_query($con, "SELECT name FROM `Lists` WHERE id = $list");
 if($listcheck === FALSE) {
     die("Error: List does not exist!");   
 }
-$resultlistcheck = mysql_fetch_assoc($listcheck);
+$resultlistcheck = mysqli_fetch_assoc($listcheck);
 
 ?>
 <!DOCTYPE html>
@@ -103,12 +101,12 @@ body {
 <ul class="list-group">
 <?php
 
-$getitems = mysql_query("SELECT * FROM `Data` WHERE list = $list");
+$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = $list");
 
 $count = "0";
 
-if (mysql_num_rows($getitems) != 0) {
-    while($row = mysql_fetch_assoc($getitems)) {
+if (mysqli_num_rows($getitems) != 0) {
+    while($row = mysqli_fetch_assoc($getitems)) {
         echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
         $count++;
     }
@@ -116,7 +114,7 @@ if (mysql_num_rows($getitems) != 0) {
     echo "<li class=\"list-group-item\">No items to show</li>";
 }
 
-mysql_close($con);
+mysqli_close($con);
 
 ?>      
 </ul>

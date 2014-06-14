@@ -12,19 +12,28 @@ require_once("config.php");
 session_start();
 
 //Connect to database
-@$con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
-if (!$con) {
-    die("Error: Could not connect to database (" . mysql_error() . "). Check your database settings are correct.");
+@$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+if (mysqli_connect_errno()) {
+    die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-mysql_select_db(DB_NAME, $con);
+if (isset($_COOKIE["lists_user_rememberme"])) {
+    $hash = $_COOKIE["lists_user_rememberme"];
+    $getuser = mysqli_query($con, "SELECT `id`, `hash` FROM `Users` WHERE `hash` = \"$hash\"");
+    if (mysqli_num_rows($getuser) == 0) {
+        header("Location: logout.php");
+        exit;
+    }
+    $userinforesult = mysqli_fetch_assoc($getuser);
+    $_SESSION["lists_user"] = $userinforesult["id"];
+}
 
 if (isset($_POST["password"]) && isset($_POST["username"])) {
-    $username = mysql_real_escape_string($_POST["username"]);
-    $password = $_POST["password"];
-    $userinfo = mysql_query("SELECT `id`, `user`, `password`, `salt` FROM `Users` WHERE `user` = \"$username\"");
-    $userinforesult = mysql_fetch_assoc($userinfo);
-    if (mysql_num_rows($userinfo) == 0) {
+    $username = mysqli_real_escape_string($con, $_POST["username"]);
+    $password = mysqli_real_escape_string($con, $_POST["password"]);
+    $userinfo = mysqli_query($con, "SELECT `id`, `user`, `password`, `salt` FROM `Users` WHERE `user` = \"$username\"");
+    $userinforesult = mysqli_fetch_assoc($userinfo);
+    if (mysqli_num_rows($userinfo) == 0) {
         header("Location: login.php?login_error=true");
         exit;
     }
@@ -32,6 +41,11 @@ if (isset($_POST["password"]) && isset($_POST["username"])) {
     $hashedpassword = hash("sha256", $salt . hash("sha256", $password));
     if ($hashedpassword == $userinforesult["password"]) {
         $_SESSION["lists_user"] = $userinforesult["id"];
+        if (isset($_POST["rememberme"])) {
+            $hash = substr(str_shuffle(MD5(microtime())), 0, 50);
+            mysqli_query($con, "UPDATE `Users` SET `hash` = \"$hash\" WHERE `id` = \"" . $userinforesult["id"] . "\"");
+            setcookie("lists_user_rememberme", $hash, time()+3600*24);
+        }
     } else {
         header("Location: login.php?login_error=true");
         exit;
@@ -101,6 +115,11 @@ if (isset($_GET["login_error"])) {
 <div class="form-group">
 <label for="password">Password</label>
 <input type="password" class="form-control" id="password" name="password" placeholder="Password...">
+</div>
+<div class="checkbox">
+<label>
+<input type="checkbox" id="rememberme" name="rememberme"> Remember me
+</label>
 </div>
 <button type="submit" class="btn btn-default pull-right">Login</button>
 </form>

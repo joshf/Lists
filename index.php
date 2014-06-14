@@ -17,23 +17,19 @@ if (!isset($_SESSION["lists_user"])) {
     exit; 
 }
 
-@$con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
-if (!$con) {
-    die("Error: Could not connect to database (" . mysql_error() . "). Check your database settings are correct.");
-} else {
-    $does_db_exist = mysql_select_db(DB_NAME, $con);
-    if (!$does_db_exist) {
-        die("Error: Database does not exist (" . mysql_error() . "). Check your database settings are correct.");
-    }
+//Connect to database
+@$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+if (mysqli_connect_errno()) {
+    die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-$getusersettings = mysql_query("SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
-if (mysql_num_rows($getusersettings) == 0) {
+$getusersettings = mysqli_query($con, "SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+if (mysqli_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
     exit;
 }
-$resultgetusersettings = mysql_fetch_assoc($getusersettings);
+$resultgetusersettings = mysqli_fetch_assoc($getusersettings);
 
 ?>
 <!DOCTYPE html>
@@ -95,10 +91,10 @@ body {
 <ul class="list-group">
 <?php
 
-$getlists = mysql_query("SELECT * FROM `Lists`");
+$getlists = mysqli_query($con, "SELECT * FROM `Lists`");
 
-if (mysql_num_rows($getlists) != 0) {
-    while($row = mysql_fetch_assoc($getlists)) {
+if (mysqli_num_rows($getlists) != 0) {
+    while($row = mysqli_fetch_assoc($getlists)) {
         if ($row["colour"] != "") {
             $colour = $row["colour"];
         } else {
@@ -109,6 +105,8 @@ if (mysql_num_rows($getlists) != 0) {
 } else {
     echo "<li class=\"list-group-item\">No lists to show</li>";
 }
+
+mysqli_close($con);
 
 ?>      
 </ul>
