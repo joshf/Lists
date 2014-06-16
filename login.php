@@ -82,7 +82,7 @@ body {
     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
     box-shadow: 0 1px 2px rgba(0,0,0,.05);
 }
-.form-signin .form-signin-heading {
+.form-signin .form-signin-heading, .form-signin .checkbox {
     margin-bottom: 10px;
 }
 .form-signin input[type="text"], .form-signin input[type="password"] {
@@ -121,7 +121,10 @@ if (isset($_GET["login_error"])) {
 <input type="checkbox" id="rememberme" name="rememberme"> Remember me
 </label>
 </div>
-<button type="submit" class="btn btn-default pull-right">Login</button>
+<div class="btn-group pull-right">
+<a href="reset.php" class="btn btn-default" role="button">Forgotten</a>
+<button type="submit" class="btn btn-primary">Login</button>
+</div>
 </form>
 </div>
 <script src="assets/jquery.min.js"></script>
