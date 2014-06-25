@@ -147,7 +147,7 @@ if (isset($_GET["email_error"])) {
 } 
 ?>
 <div class="form-group">
-<label for="username">Email</label>
+<label for="email">Email</label>
 <input type="email" class="form-control" id="email" name="email" placeholder="Email..." autofocus>
 </div>
 <button type="submit" class="btn btn-primary pull-right">Send Reset Link</button>

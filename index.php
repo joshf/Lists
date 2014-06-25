@@ -14,7 +14,7 @@ require_once("config.php");
 session_start();
 if (!isset($_SESSION["lists_user"])) {
     header("Location: login.php");
-    exit; 
+    exit;
 }
 
 //Connect to database
@@ -112,7 +112,7 @@ mysqli_close($con);
 </ul>
 <form role="form" id="addform" method="post" autocomplete="off">
 <div class="form-group">
-<label for="item">Add List</label>
+<label for="list">Add List</label>
 <input type="text" class="form-control" id="list" name="list" placeholder="Type a new list..." required>
 </div>
 <button type="submit" class="btn btn-default">Add List</button>
