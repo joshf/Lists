@@ -19,8 +19,12 @@ If you like Lists and appreciate my hard work a [donation](https://www.paypal.co
 Screenshots:
 ------------
 
+Screenshots of Lists can be found [here](http://imgur.com/a/Spva2).
+
 Releases:
 ------------
+
+Releases of Lists can be found on the the [releases page](https://github.com/joshf/Lists/releases).
 
 Installation:
 -------------
