@@ -39,7 +39,7 @@ if (isset($_POST["install"])) {
     $createdatatable = "CREATE TABLE `Data` (
 	`id` smallint(10) NOT NULL AUTO_INCREMENT,`list` smallint(10) NOT NULL,
     `item` varchar(300) NOT NULL,
-    `created` varchar(10) NOT NULL,
+    `created` date NOT NULL,
     `user` varchar(20) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=MyISAM;";
