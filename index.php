@@ -66,12 +66,9 @@ body {
 <span class="icon-bar"></span>
 <span class="icon-bar"></span>
 </button>
-<a class="navbar-brand" href="#">Lists</a>
+<a class="navbar-brand" href="index.php">Lists</a>
 </div>
 <div class="navbar-collapse collapse">
-<ul class="nav navbar-nav">
-<li class="active"><a href="index.php">Home</a></li>
-</ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $resultgetusersettings["user"]; ?> <b class="caret"></b></a>
@@ -86,7 +83,7 @@ body {
 </div>
 <div class="container">
 <div class="page-header">
-<h1>My Lists</h1>
+<h1><?php echo $resultgetusersettings["user"]; ?>'s Lists</h1>
 </div>
 <ul class="list-group">
 <?php
