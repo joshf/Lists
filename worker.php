@@ -48,7 +48,7 @@ if ($action == "add") {
     $name = strip_tags(mysqli_real_escape_string($con, $_POST["name"]));
     mysqli_query($con, "INSERT INTO `Lists` (`name`)
     VALUES (\"$name\")");
-}  elseif ($action == "delete") {
+}  elseif ($action == "complete") {
     mysqli_query($con, "DELETE FROM `Data` WHERE `id` = \"$id\"");
 }  elseif ($action == "deletelist") {
     mysqli_query($con, "DELETE FROM `Lists` WHERE `id` = \"$id\"");

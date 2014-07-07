@@ -56,7 +56,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.delete {
+.complete {
     cursor: pointer;
 }
 </style>
@@ -107,7 +107,7 @@ $count = "0";
 
 if (mysqli_num_rows($getitems) != 0) {
     while($row = mysqli_fetch_assoc($getitems)) {
-        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"complete glyphicon glyphicon-ok\" data-id=\"" . $row["id"] . "\"></span></div></li>";
         $count++;
     }
 } else {
@@ -151,13 +151,13 @@ $(document).ready(function() {
         }
     });
     /* End */
-    /* Delete */
-    $("li").on("click", ".delete", function() {
+    /* complete */
+    $("li").on("click", ".complete", function() {
         var id = $(this).data("id");
         $.ajax({
             type: "POST",
             url: "worker.php",
-            data: "action=delete&id="+ id +"",
+            data: "action=complete&id="+ id +"",
             error: function() {
                 bootbox.alert("Ajax query failed!");
             },
