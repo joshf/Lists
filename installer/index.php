@@ -50,6 +50,7 @@ if (isset($_POST["install"])) {
     $createliststable = "CREATE TABLE `Lists` (
     `id` smallint(10) NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL,
+    `colour` VARCHAR(10) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=MyISAM;";
     
