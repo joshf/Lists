@@ -9,7 +9,6 @@ Features:
 * Multiple lists
 * Assign lists different colours
 * Works well on mobile devices due to a responsive layout
-* Multiple users (coming soon)
 
 Donations:
 ------------
