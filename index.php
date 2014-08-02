@@ -17,6 +17,9 @@ if (!isset($_SESSION["lists_user"])) {
     exit;
 }
 
+//Set cookie so we dont constantly check for updates
+setcookie("listsupdatecheck", time(), time()+3600*24*7);
+
 //Connect to database
 @$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 if (mysqli_connect_errno()) {
@@ -85,6 +88,17 @@ body {
 <div class="page-header">
 <h1><?php echo $resultgetusersettings["user"]; ?>'s Lists</h1>
 </div>
+<?php
+
+//Update checking
+if (!isset($_COOKIE["listsupdatecheck"])) {
+    $remoteversion = file_get_contents("https://raw.github.com/joshf/Lists/master/version.txt");
+    if (version_compare($version, $remoteversion) < 0) {            
+        echo "<div class=\"alert alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><h4 class=\"alert-heading\">Update</h4><p>Lists <a href=\"https://github.com/joshf/Lists/releases/$remoteversion\" class=\"alert-link\" target=\"_blank\">$remoteversion</a> is available. <a href=\"https://github.com/joshf/Lists#updating\" class=\"alert-link\" target=\"_blank\">Click here for instructions on how to update</a>.</p></div>";
+    }
+} 
+
+?>
 <ul class="list-group">
 <?php
 
