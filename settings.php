@@ -21,7 +21,7 @@ if (mysqli_connect_errno()) {
     die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-$getusersettings = mysqli_query($con, "SELECT `user`, `password`, `email`, `salt` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+$getusersettings = mysqli_query($con, "SELECT `user`, `password`, `email`, `salt`, `api_key` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
 if (mysqli_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
@@ -126,6 +126,10 @@ body {
 </div>
 <button type="submit" class="btn btn-default">Save</button>
 </form>
+<br>
+<h5>API key</h5>
+<p>Your API key is: <div id="api_key"><b><?php echo $resultgetusersettings["api_key"]; ?></b></div></p>
+<button id="generateapikey" class="btn btn-default">Generate New Key</button>
 </div>
 <script src="assets/jquery.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
@@ -146,6 +150,19 @@ $(document).ready(function() {
         ["#password", "presence", "Passwords should be more than 6 characters"]
     ];
     $("form").nod(metrics);
+    $("#generateapikey").click(function() {
+        $.ajax({
+            type: "POST",
+            url: "worker.php",
+            data: "action=generateapikey",
+            error: function() {
+                $("#api_key").html("<b>Could not generate key. Failed to connect to worker.</b>");
+            },
+            success: function(api_key) {
+                $("#api_key").html("<b>"  + api_key +  "</b>");
+            }
+        });
+    });
 });
 </script>
 </body>

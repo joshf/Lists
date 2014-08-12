@@ -9,16 +9,30 @@ if (!file_exists("config.php")) {
 
 require_once("config.php");
 
-session_start();
-if (!isset($_SESSION["lists_user"])) {
-    header("Location: login.php");
-    exit;
-}
-
 //Connect to database
 @$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 if (mysqli_connect_errno()) {
     die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
+}
+
+session_start();
+if (isset($_POST["api_key"])) {
+    $api = mysqli_real_escape_string($con, $_POST["api_key"]);
+    if (empty($api)) {
+        die("Error: No API key passed!");
+    }
+    $checkkey = mysqli_query($con, "SELECT `id`, `user` FROM `Users` WHERE `api_key` = \"$api\"");
+    $checkkeyresult = mysqli_fetch_assoc($checkkey);
+    if (mysqli_num_rows($checkkey) == 0) {
+        die("Error: API key is not valid!");
+    } else {
+        $_SESSION["lists_user"] = $checkkeyresult["id"];
+    }
+}
+
+if (!isset($_SESSION["lists_user"])) {
+    header("Location: login.php");
+    exit;
 }
 
 $getusersettings = mysqli_query($con, "SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
@@ -62,6 +76,12 @@ if ($action == "add") {
 } elseif ($action == "listcolour") {
     $colour = mysqli_real_escape_string($con, $_POST["colour"]);
     mysqli_query($con, "UPDATE `Lists` SET `colour` = \"$colour\" WHERE `id` = \"$id\"");
+} elseif ($action == "generateapikey") {
+    $api = substr(str_shuffle(MD5(microtime())), 0, 50);
+    mysqli_query($con, "UPDATE `Users` SET `api_key` = \"$api\" WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+    echo $api;
+} else {
+    die("Error: Action not recognised!");
 }
 
 mysqli_close($con);

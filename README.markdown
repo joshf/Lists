@@ -9,6 +9,7 @@ Features:
 * Multiple lists
 * Assign lists different colours
 * Works well on mobile devices due to a responsive layout
+* Add tasks via an API (See wiki)
 
 Donations:
 ------------
