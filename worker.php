@@ -66,6 +66,7 @@ if ($action == "add") {
     mysqli_query($con, "DELETE FROM `Data` WHERE `id` = \"$id\"");
 }  elseif ($action == "deletelist") {
     mysqli_query($con, "DELETE FROM `Lists` WHERE `id` = \"$id\"");
+    mysqli_query($con, "DELETE FROM `Data` WHERE `list` = \"$id\"");
 } elseif ($action == "info") {
     $getinfo = mysqli_query($con, "SELECT * FROM `Data` WHERE `id` = \"$id\"");
     $resultgetinfo = mysqli_fetch_assoc($getinfo);
