@@ -35,8 +35,8 @@ if (isset($_GET["list"])) {
 	die("Error: No list passed!");
 }
 
-$listcheck = mysqli_query($con, "SELECT name FROM `Lists` WHERE id = $list");
-if($listcheck === FALSE) {
+$listcheck = mysqli_query($con, "SELECT `id`, `name` FROM `Lists` WHERE `id` = $list");
+if ($listcheck === FALSE || mysqli_num_rows($listcheck) == "0") {
     die("Error: List does not exist!");   
 }
 $resultlistcheck = mysqli_fetch_assoc($listcheck);
