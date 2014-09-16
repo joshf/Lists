@@ -98,7 +98,7 @@ body {
 <ul class="list-group">
 <?php
 
-$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = $list");
+$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = $list ORDER BY `id`");
 
 $count = "0";
 

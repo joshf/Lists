@@ -102,7 +102,7 @@ if (!isset($_COOKIE["listsupdatecheck"])) {
 <ul class="list-group">
 <?php
 
-$getlists = mysqli_query($con, "SELECT * FROM `Lists`");
+$getlists = mysqli_query($con, "SELECT * FROM `Lists` ORDER BY `id`");
 
 if (mysqli_num_rows($getlists) != 0) {
     while($row = mysqli_fetch_assoc($getlists)) {
