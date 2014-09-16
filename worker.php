@@ -56,8 +56,8 @@ if (isset($_POST["action"])) {
 if ($action == "add") {
     $list = mysqli_real_escape_string($con, $_POST["list"]);
     $item = strip_tags(mysqli_real_escape_string($con, $_POST["item"]));
-    mysqli_query($con, "INSERT INTO `Data` (`list`, `item`, `created`, `user`)
-    VALUES (\"$list\",\"$item\",CURDATE(),\"" . $resultgetusersettings["user"] . "\")");
+    mysqli_query($con, "INSERT INTO `Data` (`list`, `item`, `created`)
+    VALUES (\"$list\",\"$item\",CURDATE())");
 } elseif ($action == "addlist") {
     $name = strip_tags(mysqli_real_escape_string($con, $_POST["name"]));
     mysqli_query($con, "INSERT INTO `Lists` (`name`)
