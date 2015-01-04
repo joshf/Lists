@@ -60,14 +60,6 @@ if ($step == "1") {
     fwrite($configfile, $updatestring);
     fclose($configfile);
 
-    //Generate an api_key
-    $api_key = substr(str_shuffle(MD5(microtime())), 0, 50);
-
-    // //Add to table
-    // mysqli_query($con, "");
-    //
-    // mysqli_close($con);
-
     //Generate nonce
     $nonce = md5(date("h"));
     header("Location: upgrade.php?step=2&nonce=$nonce");
