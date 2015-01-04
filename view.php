@@ -93,12 +93,12 @@ body {
 </div>
 <div class="container">
 <div class="page-header">
-<h1><a href="index.php">Lists</a> / <?php echo $resultlistcheck["name"]; ?></h1>
+<h1>Lists <small><?php echo $resultlistcheck["name"]; ?></small></h1>
 </div>
 <ul class="list-group">
 <?php
 
-$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = $list ORDER BY `id`");
+$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = \"$list\" ORDER BY `id`");
 
 $count = "0";
 
@@ -148,7 +148,7 @@ $(document).ready(function() {
         }
     });
     /* End */
-    /* complete */
+    /* Complete */
     $("li").on("click", ".complete", function() {
         var id = $(this).data("id");
         $.ajax({
@@ -164,7 +164,9 @@ $(document).ready(function() {
         });
     });
     /* End */
+    /* Update title */    
     document.title = "Lists · <?php echo $resultlistcheck["name"]; ?> (<?php echo $count; ?>)";
+    /* End */
 });
 </script>
 </body>

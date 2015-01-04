@@ -2,19 +2,70 @@
 
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists
 
+require_once("../assets/version.php");
+
 //Check if Lists has been installed
-if (file_exists("../config.php")) {
+if (file_exists("../config.php") && (!isset($_GET["nonce"]))) {
     die("Information: Lists has already been installed! To reinstall the app please delete your config file and run this installer again.");
 }
 
-require_once("../assets/version.php");
+//Make sure we start at step 0
+if (!isset($_GET["step"])) {
+    header("Location: ?step=0");
+    exit;
+}
 
-if (isset($_POST["install"])) {
+//Stop bad things from happening
+$step = $_GET["step"];
+$steps = array("0", "1", "2", "3");
+if (!in_array($step, $steps)) {
+    $step = "0";
+}
 
+//Nonce to check against
+$nonce = md5(date("h"));
+
+//Check nonce if step 0
+if (($step == "0") && (isset($_GET["nonce"]))) {
+    if ($nonce != $_GET["nonce"]) {
+        header("Location: ?step=0");
+        exit;
+    }
+}
+
+//Create config.php
+if (isset($_POST["step_1"])) {
+    
     $dbhost = $_POST["dbhost"];
     $dbuser = $_POST["dbuser"];
     $dbpassword = $_POST["dbpassword"];
     $dbname = $_POST["dbname"];
+    
+    //Check if we can connect
+    @$con = mysqli_connect($dbhost, $dbuser, $dbpassword, $dbname);
+    if (mysqli_connect_errno()) {
+        die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
+    }
+    
+    $installstring = "<?php\n\n//Database Settings\ndefine('DB_HOST', " . var_export($dbhost, true) . ");\ndefine('DB_USER', " . var_export($dbuser, true) . ");\ndefine('DB_PASSWORD', " . var_export($dbpassword, true) . ");\ndefine('DB_NAME', " . var_export($dbname, true) . ");\n\n//Other Settings\ndefine('VERSION', " . var_export($version, true) . ");\n\n?>";
+
+    //Write Config
+    $configfile = fopen("../config.php", "w");
+    fwrite($configfile, $installstring);
+    fclose($configfile);
+    
+    //Generate nonce
+    $nonce = md5(date("h"));
+    header("Location: index.php?step=2&nonce=$nonce");
+    exit;
+
+}
+
+//Create tables
+if (isset($_POST["step_2"])) {
+    
+    require_once("../config.php");
+
     $user = $_POST["user"];
     $email = $_POST["email"];
     if (empty($_POST["password"])) {
@@ -28,20 +79,18 @@ if (isset($_POST["install"])) {
     }
     $api_key = substr(str_shuffle(MD5(microtime())), 0, 50);
     
-    $installstring = "<?php\n\n//Database Settings\ndefine('DB_HOST', " . var_export($dbhost, true) . ");\ndefine('DB_USER', " . var_export($dbuser, true) . ");\ndefine('DB_PASSWORD', " . var_export($dbpassword, true) . ");\ndefine('DB_NAME', " . var_export($dbname, true) . ");\n\n//Other Settings\ndefine('VERSION', " . var_export($version, true) . ");\n\n?>";
-    
     //Check if we can connect
-    @$con = mysqli_connect($dbhost, $dbuser, $dbpassword, $dbname);
+    @$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
     if (mysqli_connect_errno()) {
         die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
     }
 
     //Create Data table
     $createdatatable = "CREATE TABLE `Data` (
-	`id` smallint(10) NOT NULL AUTO_INCREMENT,`list` smallint(10) NOT NULL,
+	`id` smallint(10) NOT NULL AUTO_INCREMENT,
+    `list` smallint(10) NOT NULL,
     `item` varchar(300) NOT NULL,
     `created` date NOT NULL,
-    `user` varchar(20) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=MyISAM;";
 	
@@ -71,16 +120,15 @@ if (isset($_POST["install"])) {
     
     mysqli_query($con, $createuserstable);
     
-    //Add user
     mysqli_query($con, "INSERT INTO Users (user, password, salt, email, hash, api_key)
     VALUES (\"$user\",\"$password\",\"$salt\",\"$email\",\"\",\"$api_key\")");
-    
-    //Write Config
-    $configfile = fopen("../config.php", "w");
-    fwrite($configfile, $installstring);
-    fclose($configfile);
-    
+        
     mysqli_close($con);
+    
+    //Generate nonce
+    $nonce = md5(date("h"));
+    header("Location: index.php?step=3&nonce=$nonce&user=$user");
+    exit;
 }
 
 ?>
@@ -90,36 +138,60 @@ if (isset($_POST["install"])) {
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lists &middot; Installer</title>
+<title>Lists &middot; Install</title>
 <meta name="robots" content="noindex, nofollow">
-<link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="../assets/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
 <style type="text/css">
 body {
-    padding-top: 30px;
-    padding-bottom: 30px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #eee;
+}
+.install-content {
+    max-width: 600px;
+    padding: 10px 30px 50px;
+    margin: 0 auto 20px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.install-content input[type="text"] {
+    font-size: 14px;
+    height: auto;
+    margin-bottom: 5px;
+    padding: 5px 10px;
 }
 </style>
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 </head>
 <body>
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
 <div class="container">
-<div class="navbar-header">
-<a class="navbar-brand" href="#">Lists</a>
-</div>
-</div>
-</div>
-<div class="container">
-<div class="page-header">
-<h1>Installer</h1>
-</div>
+<div class="install-content">
+<div class="text-center"><img src="../assets/icon.png" width="75" height="75" alt="Lists Logo"></div>
 <?php
-if (!isset($_POST["install"])) {
-?>	
+if ($step == "0") {    
+?>
+<p>Welcome to Lists <?php echo $version ?>. Before getting started, we need some information on your database. You will need to know the following items before proceeding.</p>
+<ul>
+<li>Database name</li>
+<li>Database username</li>
+<li>Database password</li>
+<li>Database host</li>
+</ul>
+<p>You will then be asked to create an admin user.</p>
+<p>Click "Install" to get started!</p>
+<a href="?step=1&amp;nonce=<?php echo $nonce; ?>" class="btn btn-primary pull-right" role="button">Install</a>
+<?php   
+} elseif (($step == "1") && ($_GET["nonce"] == $nonce)) {
+?>
 <form role="form" method="post" autocomplete="off">
 <h4>Database Settings</h4>
 <div class="form-group">
@@ -138,6 +210,13 @@ if (!isset($_POST["install"])) {
 <label for="dbname">Database Name</label>
 <input type="text" class="form-control" id="dbname" name="dbname" placeholder="Type your database name..." required>
 </div>
+<input type="hidden" name="step_1">
+<input type="submit" class="btn btn-default pull-right" value="Next">
+</form>
+<?php
+} elseif (($step == "2") && ($_GET["nonce"] == $nonce)) {
+?>
+<form role="form" method="post" autocomplete="off">
 <h4>User Details</h4>
 <div class="form-group">
 <label for="user">User</label>
@@ -156,14 +235,34 @@ if (!isset($_POST["install"])) {
 <input type="password" class="form-control" id="passwordconfirm" name="passwordconfirm" placeholder="Type your password again..." required>
 <span class="help-block">It is recommended that your password be at least 6 characters long</span>
 </div>
-<input type="hidden" name="install">
-<input type="submit" class="btn btn-default" value="Install">
+<input type="hidden" name="step_2">
+<input type="submit" class="btn btn-default pull-right" value="Finish">
 </form>
 <?php
-} else {
-    echo "<div class=\"alert alert-success\"><h4 class=\"alert-heading\">Install Complete</h4><p>Lists has been successfully installed. Please delete the \"installer\" folder from your server, as it poses a potential security risk!</p><p>Your login details are shown below, please make a note of them.</p><ul><li>User: $user</li><li>Password: <i>Password you set during install</i></li></ul><br><p><a href=\"../login.php\" class=\"btn btn-success\">Go To Login</a></p></div>";
-}
+} elseif (($step == "3") && ($_GET["nonce"] == $nonce)) {   
 ?>
+<div class="alert alert-success">
+<h4 class="alert-heading">Install Complete</h4>
+<p>Lists has been successfully installed. Please delete the "install" folder from your server, as it poses a potential security risk!</p>
+<p>Your login details are shown below, please make a note of them.</p>
+<ul>
+<li>User: <i><?php echo strip_tags($_GET["user"]); ?></i></li>
+<li>Password: <i>Password you set during install</i></li></ul>
+</div>
+<a href="../login.php" class="btn btn-default pull-right" role="button">Login</a>
+<?php
+} else {
+?>
+<div class="alert alert-danger">
+<h4 class="alert-heading">Install Error</h4>
+<p>An error occured and the installation could not continue.</p>
+<p>Please go back and try again.</p>
+</div>
+<a href="?step=0&amp;nonce=<?php echo $nonce; ?>" class="btn btn-default pull-right" role="button">Start Over</a>
+<?php
+    }
+?>
+</div>
 </div>
 <script src="../assets/jquery.min.js"></script>
 <script src="../assets/bootstrap/js/bootstrap.min.js"></script>

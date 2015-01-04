@@ -86,7 +86,7 @@ body {
 </div>
 <div class="container">
 <div class="page-header">
-<h1><?php echo $resultgetusersettings["user"]; ?>'s Lists</h1>
+<h1>Lists <small>All</small></h1>
 </div>
 <?php
 
