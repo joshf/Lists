@@ -5,7 +5,7 @@
 require_once("assets/version.php");
 
 if (!file_exists("config.php")) {
-    header("Location: installer");
+    header("Location: install");
     exit;
 }
 
@@ -49,7 +49,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.delete, .colour {
+.list, .delete, .colour {
     cursor: pointer;
 }
 </style>
@@ -111,7 +111,7 @@ if (mysqli_num_rows($getlists) != 0) {
         } else {
             $colour = "FFFFFF";
         }
-        echo "<li class=\"list-group-item\" style=\"background-color: #" . $colour . "\"><a href=\"view.php?list=" . $row["id"] . "\">" . $row["name"] . "</a><div class=\"pull-right\"><span class=\"colour glyphicon glyphicon-adjust\" data-id=\"" . $row["id"] . "\" data-colour=\"" . $colour . "\"></span> <span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\" style=\"background-color: #" . $colour . "\"><span class=\"list\" data-id=\"" . $row["id"] . "\">" . $row["name"] . "</span><div class=\"pull-right\"><span class=\"colour glyphicon glyphicon-adjust\" data-id=\"" . $row["id"] . "\" data-colour=\"" . $colour . "\"></span> <span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No lists to show</li>";
@@ -139,6 +139,12 @@ Lists <?php echo $version; ?> &copy; <a href="http://joshf.co.uk" target="_blank
 <script src="assets/paintit.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+    /* Redirect */
+    $("li").on("click", ".list", function() {
+        var id = $(this).data("id");
+        window.location.replace("view.php?list="+id);
+    });
+    /* End */
     /* Add */
     $("#list").focus();
     $("#addform").submit(function() {

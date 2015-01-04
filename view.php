@@ -3,7 +3,7 @@
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
-    header("Location: installer");
+    header("Location: install");
     exit;
 }
 
@@ -56,7 +56,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.complete {
+.delete {
     cursor: pointer;
 }
 </style>
@@ -100,11 +100,12 @@ body {
 
 $getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = \"$list\" ORDER BY `id`");
 
+//Set counter to zero
 $count = "0";
 
 if (mysqli_num_rows($getitems) != 0) {
     while($row = mysqli_fetch_assoc($getitems)) {
-        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"complete glyphicon glyphicon-ok\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
         $count++;
     }
 } else {
@@ -148,13 +149,13 @@ $(document).ready(function() {
         }
     });
     /* End */
-    /* Complete */
-    $("li").on("click", ".complete", function() {
+    /* Delete */
+    $("li").on("click", ".delete", function() {
         var id = $(this).data("id");
         $.ajax({
             type: "POST",
             url: "worker.php",
-            data: "action=complete&id="+ id +"",
+            data: "action=delete&id="+ id +"",
             error: function() {
                 bootbox.alert("Ajax query failed!");
             },

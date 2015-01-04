@@ -3,7 +3,7 @@
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
-    header("Location: installer");
+    header("Location: install");
     exit;
 }
 
@@ -81,9 +81,6 @@ body {
     -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
     box-shadow: 0 1px 2px rgba(0,0,0,.05);
-}
-.form-signin .form-signin-heading, .form-signin .checkbox {
-    margin-bottom: 10px;
 }
 .form-signin input[type="text"], .form-signin input[type="password"] {
     font-size: 16px;

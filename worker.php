@@ -3,7 +3,7 @@
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
-    header("Location: installer");
+    header("Location: install");
     exit;
 }
 
@@ -43,14 +43,24 @@ if (mysqli_num_rows($getusersettings) == 0) {
 }
 $resultgetusersettings = mysqli_fetch_assoc($getusersettings);
 
-if (isset($_POST["id"])) {
-    $id = mysqli_real_escape_string($con, $_POST["id"]);
-}
-
 if (isset($_POST["action"])) {
     $action = $_POST["action"];
 } else {
 	die("Error: No action passed!");
+}
+
+//Check if ID exists
+$actions = array("complete", "delete", "deletelist", "listcolour", "details");
+if (in_array($action, $actions)) {
+    if (isset($_POST["id"])) {
+        $id = mysqli_real_escape_string($con, $_POST["id"]);
+        $checkid = mysqli_query($con, "SELECT `id` FROM `Data` WHERE `id` = \"$id\"");
+        if (mysqli_num_rows($checkid) == 0) {
+        	die("Error: ID does not exist!");
+        }
+    } else {
+    	die("Error: ID not set!");
+    }
 }
 
 if ($action == "add") {
@@ -60,20 +70,23 @@ if ($action == "add") {
     VALUES (\"$list\",\"$item\",CURDATE())");
 } elseif ($action == "addlist") {
     $name = strip_tags(mysqli_real_escape_string($con, $_POST["name"]));
-    mysqli_query($con, "INSERT INTO `Lists` (`name`)
-    VALUES (\"$name\")");
-}  elseif ($action == "complete") {
+    mysqli_query($con, "INSERT INTO `Lists` (`name`, `colour`)
+    VALUES (\"$name\",\"FFFFFF\")");
+}  elseif ($action == "delete") {
     mysqli_query($con, "DELETE FROM `Data` WHERE `id` = \"$id\"");
 }  elseif ($action == "deletelist") {
     mysqli_query($con, "DELETE FROM `Lists` WHERE `id` = \"$id\"");
     mysqli_query($con, "DELETE FROM `Data` WHERE `list` = \"$id\"");
-} elseif ($action == "info") {
-    $getinfo = mysqli_query($con, "SELECT * FROM `Data` WHERE `id` = \"$id\"");
-    $resultgetinfo = mysqli_fetch_assoc($getinfo);
-    echo $resultgetinfo["item"];
-} elseif ($action == "edit") {
-    $item = strip_tags(mysqli_real_escape_string($con, $_POST["item"]));
-    mysqli_query($con, "UPDATE `Data` SET `item` = \"$item\" WHERE `id` = \"$id\"");
+} elseif ($action == "details") {
+    $getdetails = mysqli_query($con, "SELECT `list`, `item`, `created` FROM `Data` WHERE `id` = \"$id\"");
+    $resultgetdetails = mysqli_fetch_assoc($getdetails);
+    
+    $arr = array();
+    $arr[0] = $resultgetdetails["list"];
+    $arr[1] = $resultgetdetails["item"];
+    $arr[2] = $resultgetdetails["created"];
+    
+    echo json_encode($arr);
 } elseif ($action == "listcolour") {
     $colour = mysqli_real_escape_string($con, $_POST["colour"]);
     mysqli_query($con, "UPDATE `Lists` SET `colour` = \"$colour\" WHERE `id` = \"$id\"");
