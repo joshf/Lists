@@ -169,7 +169,7 @@ $(document).ready(function() {
     $("li").on("click", ".colour", function() {
         var id = $(this).data("id");
         bootbox.dialog({
-            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"FFFFFF\">None</option><option value=\"B3B3B3\">Grey</option><option value=\"d9534f\">Red</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"f0ad4e\">Yellow</option></select></div>",
+            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"FFFFFF\">None</option><option value=\"D9534F\">Red</option><option value=\"ED9121\">Orange</option><option value=\"FFE303\">Yellow</option><option value=\"B3B3B3\">Grey</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"912CEE\">Purple</option><option value=\"D15FEE\">Pink</option></select></div>",
             title: "Choose List Colour",
             buttons: {
                 main: {
