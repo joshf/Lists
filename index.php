@@ -142,7 +142,7 @@ $(document).ready(function() {
     /* Redirect */
     $("li").on("click", ".list", function() {
         var id = $(this).data("id");
-        window.location.replace("view.php?list="+id);
+        window.location.href = "view.php?list="+id;
     });
     /* End */
     /* Add */
