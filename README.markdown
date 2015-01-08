@@ -1,7 +1,7 @@
 Lists Readme
 ========================
 
-Lists is a simple app to make lists of things you need to remember. Based on code from Burden, Lists provides an attractive way to manage multiple lists and supports multiple users.
+Lists is a simple app to make lists of things you need to remember. Based on code from Burden, Lists provides an attractive way to manage multiple lists.
 
 Features:
 ---------
@@ -32,8 +32,8 @@ Installation:
 1. Create a new database using your web hosts control panel (for instructions on how to do this please contact your web host)
 2. Download and unzip Lists-xxxx.zip
 3. Upload the Lists folder to your server via FTP or your hosts control panel
-4. Open up http://yoursite.com/Lists/installer in your browser and enter your database/user details
-5. Delete the "installer" folder from your server
+4. Open up http://yoursite.com/Lists/install in your browser and enter your database/user details
+5. Delete the "install" folder from your server
 6. Login to Lists using the username and password you set during the install process
 7. Add your tasks
 8. Lists should now be set up
@@ -55,7 +55,7 @@ Updating:
 5. Unzip the file
 6. Upload the unzipped Lists folder to your server via FTP or your hosts control panel
 7. Upload your config.php file into the Lists folder
-4. Open up http://yoursite.com/Lists/installer/upgrade.php in your browser and the upgrade process will start
+4. Open up http://yoursite.com/Lists/install/upgrade.php in your browser and the upgrade process will start
 9. You should now have the latest version of Lists
 
 N.B: The upgrade will only upgrade from the previous version of Lists (e.g 0.5 to 0.6), it cannot be used to upgrade from a historic version.
