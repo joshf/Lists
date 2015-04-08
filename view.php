@@ -29,13 +29,13 @@ if (mysqli_num_rows($getusersettings) == 0) {
 }
 $resultgetusersettings = mysqli_fetch_assoc($getusersettings);
 
-if (isset($_GET["list"])) {
-	$list = mysqli_real_escape_string($con, $_GET["list"]);	
+if (isset($_GET["listid"])) {
+	$listid = mysqli_real_escape_string($con, $_GET["listid"]);	
 } else {
 	die("Error: No list passed!");
 }
 
-$listcheck = mysqli_query($con, "SELECT `id`, `name` FROM `Lists` WHERE `id` = $list");
+$listcheck = mysqli_query($con, "SELECT `id`, `name` FROM `Lists` WHERE `id` = $listid");
 if ($listcheck === FALSE || mysqli_num_rows($listcheck) == "0") {
     die("Error: List does not exist!");   
 }
@@ -56,7 +56,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.delete {
+.complete, .restore {
     cursor: pointer;
 }
 </style>
@@ -93,19 +93,31 @@ body {
 </div>
 <div class="container">
 <div class="page-header">
-<h1>Lists <small><?php echo $resultlistcheck["name"]; ?></small></h1>
+<h1><?php echo $resultlistcheck["name"]; ?> <small id="count"></small></h1>
 </div>
 <ul class="list-group">
 <?php
 
-$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE list = \"$list\" ORDER BY `id`");
+$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE `list` = \"$listid\" ORDER BY `id` AND `complete`");
 
 //Set counter to zero
 $count = "0";
 
 if (mysqli_num_rows($getitems) != 0) {
     while($row = mysqli_fetch_assoc($getitems)) {
-        echo "<li class=\"list-group-item\">" . $row["item"] . "<div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\">";
+        if ($row["complete"] == "0") {
+           echo $row["item"]; 
+        } else {
+            echo "<b><s>" . $row["item"] . "</s></b>";
+        }
+        echo "<div class=\"pull-right\">";
+        if ($row["complete"] == "0") {
+            echo "<span class=\"complete glyphicon glyphicon-ok\" data-id=\"" . $row["id"] . "\"></span>";
+        } else {
+            echo "<span class=\"restore glyphicon glyphicon-repeat\" data-id=\"" . $row["id"] . "\"></span>";
+        }
+        echo "</div></li>";
         $count++;
     }
 } else {
@@ -137,7 +149,7 @@ $(document).ready(function() {
             $.ajax({
                 type: "POST",
                 url: "worker.php",
-                data: "action=add&list=<?php echo $list; ?>&item="+ item +"",
+                data: "action=add&listid=<?php echo $listid; ?>&item="+ item +"",
                 error: function() {
                     bootbox.alert("Ajax query failed!");
                 },
@@ -149,13 +161,43 @@ $(document).ready(function() {
         }
     });
     /* End */
-    /* Delete */
-    $("li").on("click", ".delete", function() {
+    /* Delete and restore */
+    $("li").on("click", ".restore", function(event) {
+        var id = $(this).data("id");
+        if (event.altKey) {
+            $.ajax({
+                type: "POST",
+                url: "worker.php",
+                data: "action=delete&id="+ id +"",
+                error: function() {
+                    bootbox.alert("Ajax query failed!");
+                },
+                success: function() {
+                    window.location.reload();
+                }
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "worker.php",
+                data: "action=restore&id="+ id +"",
+                error: function() {
+                    bootbox.alert("Ajax query failed!");
+                },
+                success: function() {
+                    window.location.reload();
+                }
+            });
+        }
+    });
+    /* End */
+    /* Complete */
+    $("li").on("click", ".complete", function() {
         var id = $(this).data("id");
         $.ajax({
             type: "POST",
             url: "worker.php",
-            data: "action=delete&id="+ id +"",
+            data: "action=complete&id="+ id +"",
             error: function() {
                 bootbox.alert("Ajax query failed!");
             },
@@ -165,8 +207,9 @@ $(document).ready(function() {
         });
     });
     /* End */
-    /* Update title */    
-    document.title = "Lists · <?php echo $resultlistcheck["name"]; ?> (<?php echo $count; ?>)";
+    /* Update Counts */    
+    document.title = "Lists · <?php echo $resultlistcheck["name"]; ?> (<?php echo $count; ?> items)";
+    $("#count").html("<?php echo $count; ?> items")
     /* End */
 });
 </script>

@@ -49,7 +49,7 @@ body {
     padding-top: 30px;
     padding-bottom: 30px;
 }
-.list, .delete, .colour {
+.list, .delete, .changecolour {
     cursor: pointer;
 }
 </style>
@@ -86,7 +86,7 @@ body {
 </div>
 <div class="container">
 <div class="page-header">
-<h1>Lists <small>All</small></h1>
+<h1>My Lists <small>View All</small></h1>
 </div>
 <?php
 
@@ -106,12 +106,13 @@ $getlists = mysqli_query($con, "SELECT * FROM `Lists` ORDER BY `id`");
 
 if (mysqli_num_rows($getlists) != 0) {
     while($row = mysqli_fetch_assoc($getlists)) {
+        echo "<li class=\"list-group-item\"><span class=\"list\" data-list-id=\"" . $row["id"] . "\">" . $row["name"] . "</span><div class=\"pull-right\">";
         if ($row["colour"] != "") {
-            $colour = $row["colour"];
+            echo "<span style=\"color: #" . $row["colour"]. ";\" class=\"changecolour glyphicon glyphicon-stop\" data-list-id=\"" . $row["id"] . "\" data-colour=\"" . $colour . "\"></span> ";
         } else {
-            $colour = "FFFFFF";
+            echo "<span style=\"color: #000000;\" class=\"changecolour glyphicon glyphicon-stop\" data-list-id=\"" . $row["id"] . "\" data-colour=\"" . $colour . "\"></span> ";
         }
-        echo "<li class=\"list-group-item\" style=\"background-color: #" . $colour . "\"><span class=\"list\" data-id=\"" . $row["id"] . "\">" . $row["name"] . "</span><div class=\"pull-right\"><span class=\"colour glyphicon glyphicon-adjust\" data-id=\"" . $row["id"] . "\" data-colour=\"" . $colour . "\"></span> <span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<span class=\"delete glyphicon glyphicon-remove\" data-list-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No lists to show</li>";
@@ -123,7 +124,7 @@ mysqli_close($con);
 </ul>
 <form role="form" id="addform" method="post" autocomplete="off">
 <div class="form-group">
-<label for="list">Add List</label>
+<label for="list">New List</label>
 <input type="text" class="form-control" id="list" name="list" placeholder="Type a new list..." required>
 </div>
 <button type="submit" class="btn btn-default">Add List</button>
@@ -141,8 +142,8 @@ Lists <?php echo $version; ?> &copy; <a href="http://joshf.co.uk" target="_blank
 $(document).ready(function() {
     /* Redirect */
     $("li").on("click", ".list", function() {
-        var id = $(this).data("id");
-        window.location.href = "view.php?list="+id;
+        var id = $(this).data("list-id");
+        window.location.href = "view.php?listid="+id;
     });
     /* End */
     /* Add */
@@ -166,10 +167,10 @@ $(document).ready(function() {
     });
     /* End */
     /* List Colour */
-    $("li").on("click", ".colour", function() {
-        var id = $(this).data("id");
+    $("li").on("click", ".changecolour", function() {
+        var id = $(this).data("list-id");
         bootbox.dialog({
-            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"FFFFFF\">None</option><option value=\"D9534F\">Red</option><option value=\"ED9121\">Orange</option><option value=\"FFE303\">Yellow</option><option value=\"B3B3B3\">Grey</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"912CEE\">Purple</option><option value=\"D15FEE\">Pink</option></select></div>",
+            message: "<div class=\"form-group\"><select class=\"form-control\" id=\"colour\" name=\"colour\"><option value=\"000000\">None</option><option value=\"D9534F\">Red</option><option value=\"ED9121\">Orange</option><option value=\"FFE303\">Yellow</option><option value=\"B3B3B3\">Grey</option><option value=\"5cb85c\">Green</option><option value=\"5bc0de\">Blue</option><option value=\"912CEE\">Purple</option><option value=\"D15FEE\">Pink</option></select></div>",
             title: "Choose List Colour",
             buttons: {
                 main: {
@@ -186,11 +187,11 @@ $(document).ready(function() {
     /* End */
     /* Delete */
     $("li").on("click", ".delete", function() {
-        var id = $(this).data("id");
+        var id = $(this).data("list-id");
         $.ajax({
             type: "POST",
             url: "worker.php",
-            data: "action=deletelist&id="+ id +"",
+            data: "action=deletelist&listid="+ id +"",
             error: function() {
                 bootbox.alert("Ajax query failed!");
             },

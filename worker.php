@@ -50,31 +50,41 @@ if (isset($_POST["action"])) {
 }
 
 //Check if ID exists
-$actions = array("complete", "delete", "deletelist", "listcolour", "details");
-if (in_array($action, $actions)) {
-    if (isset($_POST["id"])) {
-        $id = mysqli_real_escape_string($con, $_POST["id"]);
-        $checkid = mysqli_query($con, "SELECT `id` FROM `Data` WHERE `id` = \"$id\"");
-        if (mysqli_num_rows($checkid) == 0) {
-        	die("Error: ID does not exist!");
-        }
-    } else {
-    	die("Error: ID not set!");
+if (isset($_POST["listid"])) {
+    $id = mysqli_real_escape_string($con, $_POST["listid"]);
+    $checkid = mysqli_query($con, "SELECT `id`, `name` FROM `Lists` WHERE `id` = \"$id\"");
+    if (mysqli_num_rows($checkid) == 0) {
+    	die("Error: ID does not exist!");
+    }
+} elseif (isset($_POST["id"])) {
+    $id = mysqli_real_escape_string($con, $_POST["id"]);
+    $checkid = mysqli_query($con, "SELECT `id` FROM `Data` WHERE `id` = \"$id\"");
+    if (mysqli_num_rows($checkid) == 0) {
+    	die("Error: ID does not exist!");
+    }
+} else {
+    $actions = array("complete", "delete", "restore", "deletelist", "listcolour", "details");
+    if (in_array($action, $actions)) {
+        die("Error: ID not set!");
     }
 }
 
 if ($action == "add") {
-    $list = mysqli_real_escape_string($con, $_POST["list"]);
+    $id = mysqli_real_escape_string($con, $_POST["listid"]);
     $item = strip_tags(mysqli_real_escape_string($con, $_POST["item"]));
     mysqli_query($con, "INSERT INTO `Data` (`list`, `item`, `created`)
-    VALUES (\"$list\",\"$item\",CURDATE())");
+    VALUES (\"$id\",\"$item\",CURDATE())");
 } elseif ($action == "addlist") {
     $name = strip_tags(mysqli_real_escape_string($con, $_POST["name"]));
     mysqli_query($con, "INSERT INTO `Lists` (`name`, `colour`)
-    VALUES (\"$name\",\"FFFFFF\")");
-}  elseif ($action == "delete") {
+    VALUES (\"$name\",\"000000\")");
+} elseif ($action == "complete") {
+    mysqli_query($con, "UPDATE `Data` SET `complete` = \"1\" WHERE `id` = \"$id\"");
+} elseif ($action == "restore") {
+    mysqli_query($con, "UPDATE `Data` SET `complete` = \"0\" WHERE `id` = \"$id\"");
+} elseif ($action == "delete") {
     mysqli_query($con, "DELETE FROM `Data` WHERE `id` = \"$id\"");
-}  elseif ($action == "deletelist") {
+} elseif ($action == "deletelist") {
     mysqli_query($con, "DELETE FROM `Lists` WHERE `id` = \"$id\"");
     mysqli_query($con, "DELETE FROM `Data` WHERE `list` = \"$id\"");
 } elseif ($action == "details") {

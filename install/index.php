@@ -91,6 +91,7 @@ if (isset($_POST["step_2"])) {
     `list` smallint(10) NOT NULL,
     `item` varchar(300) NOT NULL,
     `created` date NOT NULL,
+    `complete` int(1) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=MyISAM;";
 	
