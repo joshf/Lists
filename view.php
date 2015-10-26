@@ -73,9 +73,6 @@ $resultlistcheck = mysqli_fetch_assoc($listcheck);
 
 $getitems = mysqli_query($con, "SELECT * FROM `data` WHERE `list` = \"$listid\" ORDER BY `id` AND `complete`");
 
-//Set counter to zero
-$count = "0";
-
 if (mysqli_num_rows($getitems) != 0) {
     while($row = mysqli_fetch_assoc($getitems)) {
         echo "<li class=\"list-group-item\">";

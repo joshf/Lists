@@ -1,15 +1,14 @@
 Lists Readme
 ========================
 
-Lists is a simple app to make lists of things you need to remember. Based on code from Burden, Lists provides an attractive way to manage multiple lists.
+Lists is a simple app to make lists of things you need to remember. It provides an attractive way to manage multiple lists.
 
 Features:
 ---------
 
 * Multiple lists
-* Assign lists different colours
 * Works well on mobile devices due to a responsive layout
-* Add tasks via an API (See wiki)
+* Add items via an API
 
 Donations:
 ------------
@@ -19,7 +18,7 @@ If you like Lists and appreciate my hard work a [donation](https://www.paypal.co
 Screenshots:
 ------------
 
-Screenshots of Lists can be found [here](http://imgur.com/a/Spva2).
+Coming soon
 
 Releases:
 ------------
@@ -35,7 +34,7 @@ Installation:
 4. Open up http://yoursite.com/Lists/install in your browser and enter your database/user details
 5. Delete the "install" folder from your server
 6. Login to Lists using the username and password you set during the install process
-7. Add your tasks
+7. Add your items
 8. Lists should now be set up
 
 Usage:
@@ -43,7 +42,7 @@ Usage:
 
 To add a new list, simply type the name of the list you want in the box at the bottom of the page and click Add List or hit enter. To add items to lists click the list you want and enter the new item at the bottom of the page. Once done click Add Item or hit enter.
 
-To delete a list or an item from a list click the "x" on the right hand side. To change the colour of a list click the half shaded icon next to the delete button on a list.
+To delete a list or an item from a list click the "x" on the right hand side.
 
 Updating:
 ---------
@@ -63,7 +62,7 @@ N.B: The upgrade will only upgrade from the previous version of Lists (e.g 0.5 t
 Removal:
 --------
 
-To remove Lists, simply delete the Lists folder from your server and delete the "Data" table from your database.
+To remove Lists, simply delete the Lists folder from your server and delete the "lists", "data" and "users" tables from your database
 
 Support:
 -------------
