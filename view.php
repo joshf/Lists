@@ -105,7 +105,6 @@ mysqli_close($con);
 </div>
 <button type="submit" class="btn btn-default">Add Item</button>
 </form>
-<br>
 </div>
 <script src="assets/bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="assets/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>

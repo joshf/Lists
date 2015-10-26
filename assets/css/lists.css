@@ -2,7 +2,10 @@
     cursor: pointer;
 }
 body {
-    padding-top: 50px;
+    padding-top: 20px;
+}
+.container {
+    padding-bottom: 25px;
 }
 a:hover, a:visited, a:link, a:active {
     color: #000000;
