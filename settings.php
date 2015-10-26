@@ -3,8 +3,7 @@
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
-    header("Location: install");
-    exit;
+    die("Error: Config file not found!");
 }
 
 require_once("config.php");
@@ -21,7 +20,7 @@ if (mysqli_connect_errno()) {
     die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-$getusersettings = mysqli_query($con, "SELECT `user`, `password`, `email`, `salt`, `api_key` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+$getusersettings = mysqli_query($con, "SELECT `user`, `password`, `email`, `salt`, `api_key` FROM `users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
 if (mysqli_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
@@ -44,7 +43,7 @@ if (!empty($_POST)) {
     }
 
     //Update Settings
-    mysqli_query($con, "UPDATE Users SET `user` = \"$user\", `password` = \"$password\", `email` = \"$email\", `salt` = \"$salt\" WHERE `user` = \"" . $resultgetusersettings["user"] . "\"");
+    mysqli_query($con, "UPDATE `users` SET `user` = \"$user\", `password` = \"$password\", `email` = \"$email\", `salt` = \"$salt\" WHERE `user` = \"" . $resultgetusersettings["user"] . "\"");
     
     //Show updated values
     header("Location: settings.php");
@@ -60,58 +59,27 @@ mysqli_close($con);
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lists &middot; Settings</title>
-<link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<style type="text/css">
-body {
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-</style>
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/favicon.ico">
+<title>Lists &raquo; Settings</title>
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="stylesheet" href="assets/bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen">
+<link rel="stylesheet" href="assets/css/lists.css" type="text/css" media="screen">
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body>
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
 <div class="container">
-<div class="navbar-header">
-<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-<span class="sr-only">Toggle navigation</span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</button>
-<a class="navbar-brand" href="index.php">Lists</a>
-</div>
-<div class="navbar-collapse collapse">
-<ul class="nav navbar-nav navbar-right">
-<li class="dropdown">
-<a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $resultgetusersettings["user"]; ?> <b class="caret"></b></a>
-<ul class="dropdown-menu">
-<li><a href="settings.php">Settings</a></li>
-<li><a href="logout.php">Logout</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="container">
-<div class="page-header">
+<div class="pull-right"><a href="settings.php"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a> <a href="logout.php"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></div>
 <h1>Settings</h1>
-</div>
-<div id="updated" style="display: none;">
-<div class="alert alert-info">
-<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>   
-<strong>Info:</strong> Settings updated.  
-</div>
-</div>
-<form role="form" method="post" autocomplete="off">
-<h4>User Details</h4>
+<ol class="breadcrumb">
+<li><a href="index.php">Lists</a></li>
+<li class="active">Settings</li>
+</ol>
+<form id="settingsform" method="post" autocomplete="off">
 <div class="form-group">
 <label class="control-label" for="user">User</label>
 <input type="text" class="form-control" id="user" name="user" value="<?php echo $resultgetusersettings["user"]; ?>" placeholder="Enter a username..." required>
@@ -124,42 +92,46 @@ body {
 <label class="control-label" for="password">Password</label>
 <input type="password" class="form-control" id="password" name="password" value="<?php echo $resultgetusersettings["password"]; ?>" placeholder="Enter a password..." required>
 </div>
-<button type="submit" class="btn btn-default">Save</button>
+<button type="submit" class="btn btn-default">Update</button>
 </form>
-<br>
-<h5>API key</h5>
-<p>Your API key is: <div id="api_key"><b><?php echo $resultgetusersettings["api_key"]; ?></b></div></p>
+<hr>
+<h2>API key</h2>
+<p>Your API key is: <b><span id="api_key"><?php echo $resultgetusersettings["api_key"]; ?></span></b></p>
 <button id="generateapikey" class="btn btn-default">Generate New Key</button>
 </div>
-<script src="assets/jquery.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/jquery.cookie.min.js"></script>
-<script src="assets/nod.min.js"></script>
+<script src="assets/bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/bootstrap-validator/dist/validator.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/js-cookie/src/js.cookie.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    if ($.cookie("settings_updated")) {
-        $("#updated").show("fast");
-        $.removeCookie("settings_updated");
+    if (Cookies.get("lists_settings_updated")) {
+        $.notify({
+            message: "Settings updated!",
+            icon: "glyphicon glyphicon-ok",
+        },{
+            type: "success",
+            allow_dismiss: true
+        });
+        Cookies.remove("lists_settings_updated");
     }
-    $("form").submit(function() {
-        $.cookie("settings_updated", "true");
+    $("#settingsform").validator({
+        disable: true
     });
-    var metrics = [
-        ["#user", "presence", "User name cannot be empty!"],
-        ["#email", "email", "Enter a valid email address"],
-        ["#password", "presence", "Passwords should be more than 6 characters"]
-    ];
-    $("form").nod(metrics);
+    $("form").submit(function() {
+        Cookies.set("lists_settings_updated", "1", { expires: 7 });
+    });
     $("#generateapikey").click(function() {
         $.ajax({
             type: "POST",
             url: "worker.php",
             data: "action=generateapikey",
             error: function() {
-                $("#api_key").html("<b>Could not generate key. Failed to connect to worker.</b>");
+                $("#api_key").html("Could not generate key. Failed to connect to worker.</b>");
             },
             success: function(api_key) {
-                $("#api_key").html("<b>"  + api_key +  "</b>");
+                $("#api_key").html(api_key);
             }
         });
     });

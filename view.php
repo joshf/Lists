@@ -2,9 +2,10 @@
 
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
+require_once("assets/version.php");
+
 if (!file_exists("config.php")) {
-    header("Location: install");
-    exit;
+    die("Error: Config file not found!");
 }
 
 require_once("config.php");
@@ -21,7 +22,7 @@ if (mysqli_connect_errno()) {
     die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-$getusersettings = mysqli_query($con, "SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+$getusersettings = mysqli_query($con, "SELECT `user` FROM `users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
 if (mysqli_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
@@ -47,58 +48,30 @@ $resultlistcheck = mysqli_fetch_assoc($listcheck);
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
-<title>Lists</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/favicon.ico">
+<title>Lists &raquo; View List</title>
 <link rel="apple-touch-icon" href="assets/icon.png">
-<link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<style type="text/css">
-body {
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-.complete, .restore {
-    cursor: pointer;
-}
-</style>
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<link rel="stylesheet" href="assets/bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen">
+<link rel="stylesheet" href="assets/css/lists.css" type="text/css" media="screen">
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body>
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
 <div class="container">
-<div class="navbar-header">
-<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-<span class="sr-only">Toggle navigation</span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</button>
-<a class="navbar-brand" href="index.php">Lists</a>
-</div>
-<div class="navbar-collapse collapse">
-<ul class="nav navbar-nav navbar-right">
-<li class="dropdown">
-<a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $resultgetusersettings["user"]; ?> <b class="caret"></b></a>
-<ul class="dropdown-menu">
-<li><a href="settings.php">Settings</a></li>
-<li><a href="logout.php">Logout</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="container">
-<div class="page-header">
-<h1><?php echo $resultlistcheck["name"]; ?> <small id="count"></small></h1>
-</div>
+<div class="pull-right"><a href="settings.php"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a> <a href="logout.php"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></div>
+<h1><?php echo $resultlistcheck["name"]; ?></h1>
+<ol class="breadcrumb">
+<li><a href="index.php">Lists</a></li>
+<li class="active"><?php echo $resultlistcheck["name"]; ?></li>
+</ol>
 <ul class="list-group">
 <?php
 
-$getitems = mysqli_query($con, "SELECT * FROM `Data` WHERE `list` = \"$listid\" ORDER BY `id` AND `complete`");
+$getitems = mysqli_query($con, "SELECT * FROM `data` WHERE `list` = \"$listid\" ORDER BY `id` AND `complete`");
 
 //Set counter to zero
 $count = "0";
@@ -128,40 +101,52 @@ mysqli_close($con);
 
 ?>      
 </ul>
-<form role="form" id="addform" method="post" autocomplete="off">
+<form id="additemform" method="post" autocomplete="off">
 <div class="form-group">
 <label for="item">Add Item</label>
 <input type="text" class="form-control" id="item" name="item" placeholder="Type a item..." required>
 </div>
 <button type="submit" class="btn btn-default">Add Item</button>
 </form>
+<br>
 </div>
-<script src="assets/jquery.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/bootbox.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-    /* Add */
-    $("#item").focus();
-    $("#addform").submit(function() {
+<script src="assets/bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">  
+$(document).ready(function () {
+    $("#additemform").submit(function() {
         var item = $("#item").val();
         if (item != null && item != "") {
             $.ajax({
                 type: "POST",
                 url: "worker.php",
-                data: "action=add&listid=<?php echo $listid; ?>&item="+ item +"",
+                data: "action=add&id=<?php echo $listid; ?>&item="+ item +"",
                 error: function() {
-                    bootbox.alert("Ajax query failed!");
+                    $.notify({
+                        message: "Ajax query failed!",
+                        icon: "glyphicon glyphicon-warning-sign",
+                    },{
+                        type: "danger",
+                        allow_dismiss: true
+                    });
                 },
                 success: function() {
-                    window.location.reload();
+                    $.notify({
+                        message: "Item added!",
+                        icon: "glyphicon glyphicon-ok",
+                    },{
+                        type: "success",
+                        allow_dismiss: true
+                    });
+                    setTimeout(function() {
+                    	window.location.reload();
+                    }, 500);
                 }
             });
             return false;
         }
     });
-    /* End */
-    /* Delete and restore */
     $("li").on("click", ".restore", function(event) {
         var id = $(this).data("id");
         if (event.altKey) {
@@ -170,10 +155,25 @@ $(document).ready(function() {
                 url: "worker.php",
                 data: "action=delete&id="+ id +"",
                 error: function() {
-                    bootbox.alert("Ajax query failed!");
+                    $.notify({
+                        message: "Ajax query failed!",
+                        icon: "glyphicon glyphicon-warning-sign",
+                    },{
+                        type: "danger",
+                        allow_dismiss: true
+                    });
                 },
                 success: function() {
-                    window.location.reload();
+                    $.notify({
+                        message: "Item deleted!",
+                        icon: "glyphicon glyphicon-ok",
+                    },{
+                        type: "success",
+                        allow_dismiss: true
+                    });
+                    setTimeout(function() {
+                    	window.location.reload();
+                    }, 500);
                 }
             });
         } else {
@@ -182,16 +182,29 @@ $(document).ready(function() {
                 url: "worker.php",
                 data: "action=restore&id="+ id +"",
                 error: function() {
-                    bootbox.alert("Ajax query failed!");
+                    $.notify({
+                        message: "Ajax query failed!",
+                        icon: "glyphicon glyphicon-warning-sign",
+                    },{
+                        type: "danger",
+                        allow_dismiss: true
+                    });
                 },
                 success: function() {
-                    window.location.reload();
+                    $.notify({
+                        message: "Item restored!",
+                        icon: "glyphicon glyphicon-ok",
+                    },{
+                        type: "success",
+                        allow_dismiss: true
+                    });
+                    setTimeout(function() {
+                    	window.location.reload();
+                    }, 500);
                 }
             });
         }
     });
-    /* End */
-    /* Complete */
     $("li").on("click", ".complete", function() {
         var id = $(this).data("id");
         $.ajax({
@@ -199,18 +212,28 @@ $(document).ready(function() {
             url: "worker.php",
             data: "action=complete&id="+ id +"",
             error: function() {
-                bootbox.alert("Ajax query failed!");
+                $.notify({
+                    message: "Ajax query failed!",
+                    icon: "glyphicon glyphicon-warning-sign",
+                },{
+                    type: "danger",
+                    allow_dismiss: true
+                });
             },
             success: function() {
-                window.location.reload();
+                $.notify({
+                    message: "Item completed!",
+                    icon: "glyphicon glyphicon-ok",
+                },{
+                    type: "success",
+                    allow_dismiss: true
+                });
+                setTimeout(function() {
+                	window.location.reload();
+                }, 500);
             }
         });
     });
-    /* End */
-    /* Update Counts */    
-    document.title = "Lists · <?php echo $resultlistcheck["name"]; ?> (<?php echo $count; ?> items)";
-    $("#count").html("<?php echo $count; ?> items")
-    /* End */
 });
 </script>
 </body>

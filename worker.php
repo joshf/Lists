@@ -3,8 +3,7 @@
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
-    header("Location: install");
-    exit;
+    die("Error: Config file not found!");
 }
 
 require_once("config.php");
@@ -16,12 +15,16 @@ if (mysqli_connect_errno()) {
 }
 
 session_start();
-if (isset($_POST["api_key"])) {
-    $api = mysqli_real_escape_string($con, $_POST["api_key"]);
-    if (empty($api)) {
+if (isset($_POST["api_key"]) || isset($_GET["api_key"])) {
+    if (isset($_POST["api_key"])) {
+        $api_key = mysqli_real_escape_string($con, $_POST["api_key"]);
+    } elseif (isset($_GET["api_key"])) {
+        $api_key = mysqli_real_escape_string($con, $_GET["api_key"]);
+    }
+    if (empty($api_key)) {
         die("Error: No API key passed!");
     }
-    $checkkey = mysqli_query($con, "SELECT `id`, `user` FROM `Users` WHERE `api_key` = \"$api\"");
+    $checkkey = mysqli_query($con, "SELECT `id`, `user` FROM `users` WHERE `api_key` = \"$api_key\"");
     $checkkeyresult = mysqli_fetch_assoc($checkkey);
     if (mysqli_num_rows($checkkey) == 0) {
         die("Error: API key is not valid!");
@@ -35,7 +38,7 @@ if (!isset($_SESSION["lists_user"])) {
     exit;
 }
 
-$getusersettings = mysqli_query($con, "SELECT `user` FROM `Users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
+$getusersettings = mysqli_query($con, "SELECT `user` FROM `users` WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
 if (mysqli_num_rows($getusersettings) == 0) {
     session_destroy();
     header("Location: login.php");
@@ -45,65 +48,88 @@ $resultgetusersettings = mysqli_fetch_assoc($getusersettings);
 
 if (isset($_POST["action"])) {
     $action = $_POST["action"];
+} elseif (isset($_GET["action"])) {
+    $action = $_GET["action"];
 } else {
 	die("Error: No action passed!");
 }
 
 //Check if ID exists
-if (isset($_POST["listid"])) {
-    $id = mysqli_real_escape_string($con, $_POST["listid"]);
-    $checkid = mysqli_query($con, "SELECT `id`, `name` FROM `Lists` WHERE `id` = \"$id\"");
-    if (mysqli_num_rows($checkid) == 0) {
-    	die("Error: ID does not exist!");
-    }
-} elseif (isset($_POST["id"])) {
-    $id = mysqli_real_escape_string($con, $_POST["id"]);
-    $checkid = mysqli_query($con, "SELECT `id` FROM `Data` WHERE `id` = \"$id\"");
-    if (mysqli_num_rows($checkid) == 0) {
-    	die("Error: ID does not exist!");
-    }
-} else {
-    $actions = array("complete", "delete", "restore", "deletelist", "listcolour", "details");
-    if (in_array($action, $actions)) {
-        die("Error: ID not set!");
+$actions = array("add", "complete", "restore", "delete", "deletelist", "info");
+if (in_array($action, $actions)) {
+    if (isset($_POST["id"]) || isset($_GET["id"])) {
+        if (isset($_POST["action"])) {
+            $id = mysqli_real_escape_string($con, $_POST["id"]);
+        } elseif (isset($_GET["action"])) {
+            $id = mysqli_real_escape_string($con, $_GET["id"]);
+        }
+        if ($action == "deletelist" || $action == "add" || $action == "info") {
+            $checkid = mysqli_query($con, "SELECT `id` FROM `lists` WHERE `id` = $id");
+        } else {
+            $checkid = mysqli_query($con, "SELECT `id` FROM `data` WHERE `id` = $id");
+        }        
+        if (mysqli_num_rows($checkid) == 0) {
+        	die("Error: ID does not exist!");
+        }
+    } else {
+    	die("Error: ID not set!");
     }
 }
 
+//Define variables
+if (isset($_POST["item"])) {
+    $item = mysqli_real_escape_string($con, $_POST["item"]);
+}
+
 if ($action == "add") {
-    $id = mysqli_real_escape_string($con, $_POST["listid"]);
-    $item = strip_tags(mysqli_real_escape_string($con, $_POST["item"]));
-    mysqli_query($con, "INSERT INTO `Data` (`list`, `item`, `created`)
+    mysqli_query($con, "INSERT INTO `data` (`list`, `item`, `created`)
     VALUES (\"$id\",\"$item\",CURDATE())");
+    
+    echo "Info: Item added!";
 } elseif ($action == "addlist") {
     $name = strip_tags(mysqli_real_escape_string($con, $_POST["name"]));
-    mysqli_query($con, "INSERT INTO `Lists` (`name`, `colour`)
-    VALUES (\"$name\",\"000000\")");
+    mysqli_query($con, "INSERT INTO `Lists` (`name`)
+    VALUES (\"$name\")");
+    
+    echo "Info: List added!";
 } elseif ($action == "complete") {
-    mysqli_query($con, "UPDATE `Data` SET `complete` = \"1\" WHERE `id` = \"$id\"");
+    mysqli_query($con, "UPDATE `data` SET `complete` = \"1\" WHERE `id` = \"$id\"");
+    
+    echo "Info: Item marked as completed!";
 } elseif ($action == "restore") {
-    mysqli_query($con, "UPDATE `Data` SET `complete` = \"0\" WHERE `id` = \"$id\"");
+    mysqli_query($con, "UPDATE `data` SET `complete` = \"0\" WHERE `id` = \"$id\"");
+    
+    echo "Info: Item restored!";
+    
 } elseif ($action == "delete") {
-    mysqli_query($con, "DELETE FROM `Data` WHERE `id` = \"$id\"");
+    mysqli_query($con, "DELETE FROM `data` WHERE `id` = \"$id\"");
+    
+    echo "Info: Item deleted!";
 } elseif ($action == "deletelist") {
-    mysqli_query($con, "DELETE FROM `Lists` WHERE `id` = \"$id\"");
-    mysqli_query($con, "DELETE FROM `Data` WHERE `list` = \"$id\"");
-} elseif ($action == "details") {
-    $getdetails = mysqli_query($con, "SELECT `list`, `item`, `created` FROM `Data` WHERE `id` = \"$id\"");
-    $resultgetdetails = mysqli_fetch_assoc($getdetails);
+    mysqli_query($con, "DELETE FROM `lists` WHERE `id` = \"$id\"");
+    mysqli_query($con, "DELETE FROM `data` WHERE `list` = \"$id\"");
     
-    $arr = array();
-    $arr[0] = $resultgetdetails["list"];
-    $arr[1] = $resultgetdetails["item"];
-    $arr[2] = $resultgetdetails["created"];
+    echo "Info: List deleted!";
+} elseif ($action == "info") {
     
-    echo json_encode($arr);
-} elseif ($action == "listcolour") {
-    $colour = mysqli_real_escape_string($con, $_POST["colour"]);
-    mysqli_query($con, "UPDATE `Lists` SET `colour` = \"$colour\" WHERE `id` = \"$id\"");
+    $getdata = mysqli_query($con, "SELECT `id`, `item`, `created`, `complete` FROM `data` WHERE `list` = \"$id\"");
+    
+    while($item = mysqli_fetch_assoc($getdata)) {
+    
+        $data[] = array(
+            "id" => $item["id"],
+            "item" => $item["item"],
+            "created" => $item["created"],
+            "complete" => $item["complete"]
+        );
+    
+    }
+    echo json_encode(array("data" => $data));
+    
 } elseif ($action == "generateapikey") {
-    $api = substr(str_shuffle(MD5(microtime())), 0, 50);
-    mysqli_query($con, "UPDATE `Users` SET `api_key` = \"$api\" WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
-    echo $api;
+    $api_key = substr(str_shuffle(MD5(microtime())), 0, 50);
+    mysqli_query($con, "UPDATE `users` SET `api_key` = \"$api_key\" WHERE `id` = \"" . $_SESSION["indication_user"] . "\"");
+    echo $api_key;
 } else {
     die("Error: Action not recognised!");
 }
