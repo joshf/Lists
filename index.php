@@ -63,7 +63,7 @@ $getlists = mysqli_query($con, "SELECT * FROM `lists` ORDER BY `id`");
 
 if (mysqli_num_rows($getlists) != 0) {
     while($row = mysqli_fetch_assoc($getlists)) {
-        echo "<li class=\"list-group-item\" data-id=\"" . $row["id"] . "\"><span class=\"list\" data-id=\"" . $row["id"] . "\">" . $row["name"] . "</span><div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
+        echo "<li class=\"list-group-item\"><span class=\"list\" data-id=\"" . $row["id"] . "\">" . $row["name"] . "</span><div class=\"pull-right\"><span class=\"delete glyphicon glyphicon-remove\" data-id=\"" . $row["id"] . "\"></span></div></li>";
     }
 } else {
     echo "<li class=\"list-group-item\">No lists to show</li>";
@@ -80,16 +80,16 @@ mysqli_close($con);
 </div>
 <button type="submit" class="btn btn-default">Add</button>
 </form>
-<span class="pull-right text-muted"><small>Version <?php echo $version; ?> </small></span>
+<span class="pull-right text-muted"><small>Version <?php echo $version; ?></small></span>
 </div>
 <script src="assets/bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="assets/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="assets/bower_components/js-cookie/src/js.cookie.js" type="text/javascript" charset="utf-8"></script>
-<script src="assets/bower_components/modernizr-load/modernizr.js" type="text/javascript" charset="utf-8"></script>
 <script src="assets/bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/bower_components/bootbox.js/bootbox.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">  
 $(document).ready(function () {
-    var lists_version = "<?php echo $version ?>";
+    var lists_version = "1.0";
     if (!Cookies.get("lists_didcheckforupdates")) {
         $.getJSON("https://api.github.com/repos/joshf/Lists/releases").done(function(resp) {
             var data = resp[0];
@@ -149,7 +149,7 @@ $(document).ready(function () {
                     });
                     setTimeout(function() {
                     	window.location.reload();
-                    }, 2000);
+                    }, 500);
                 }
             });
             return false;
@@ -180,7 +180,7 @@ $(document).ready(function () {
                 });
                 setTimeout(function() {
                 	window.location.reload();
-                }, 2000);
+                }, 500);
             }
         });
     });
