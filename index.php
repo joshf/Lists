@@ -89,7 +89,7 @@ mysqli_close($con);
 <script src="assets/bower_components/bootbox.js/bootbox.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">  
 $(document).ready(function () {
-    var lists_version = "1.0";
+    var lists_version = "<?php $version; ?>";
     if (!Cookies.get("lists_didcheckforupdates")) {
         $.getJSON("https://api.github.com/repos/joshf/Lists/releases").done(function(resp) {
             var data = resp[0];
