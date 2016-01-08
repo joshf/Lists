@@ -1,8 +1,8 @@
 <?php
 
-//Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
+//Chore, Copyright Josh Fradley (http://github.com/joshf/Chore)
 
 //Define version across the script
-$version = "2.0Beta";
+$version = "0.9beta";
 
 ?>

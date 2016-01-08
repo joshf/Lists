@@ -1,14 +1,14 @@
-.edit, .delete, .list {
+#add, #settings, #logout, .complete, .delete, #addcategory, .list {
     cursor: pointer;
 }
 body {
     padding-top: 20px;
 }
+li.pull-right:before {
+    display: none;
+}
 .container {
     padding-bottom: 25px;
-}
-a:hover, a:visited, a:link, a:active {
-    color: #000000;
 }
 .top-pad {
     padding-top: 50px;

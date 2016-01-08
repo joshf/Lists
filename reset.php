@@ -1,6 +1,6 @@
 <?php
 
-//Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
+//Chore, Copyright Josh Fradley (http://github.com/joshf/Chore)
 
 if (!file_exists("config.php")) {
     die("Error: Config file not found!");
@@ -14,7 +14,7 @@ if (mysqli_connect_errno()) {
     die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-//Get path to Lists
+//Get path to Chore
 $currenturl = $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
 $pathtoscriptwithslash = "http://" . substr($currenturl, 0, strpos($currenturl, "reset.php"));
 $pathtoscript = rtrim($pathtoscriptwithslash, "/");	
@@ -40,11 +40,11 @@ if (isset($_GET["email"]) && isset($_GET["hash"])) {
     
     //Send new pass email
 	$to = $checkinforesult["email"];
-    $subject = "Lists » Your New Password";
+    $subject = "Chore » Your New Password";
 	$headers = "MIME-Version: 1.0\r\n";
-    $headers .= "From: Lists Mailer <lists@" . $_SERVER["SERVER_NAME"] . ">\r\n";    
+    $headers .= "From: Chore Mailer <chore@" . $_SERVER["SERVER_NAME"] . ">\r\n";    
 	$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-    $message = "<html><body><p>Hi " . $checkinforesult["user"] . ",</p><p>Your new password is <b>$rawpassword</b>.</p><p>Click <a href=\"$pathtoscript/login.php\">here</a> to go to the login page.</p><p>Your welcome!<br>- Lists Mailer</p></html></body>";
+    $message = "<html><body><p>Hi " . $checkinforesult["user"] . ",</p><p>Your new password is <b>$rawpassword</b>.</p><p>Click <a href=\"$pathtoscript/login.php\">here</a> to go to the login page.</p><p>Your welcome!<br>- Chore Mailer</p></html></body>";
     if (mail($to, $subject, $message, $headers)) {
         header("Location: reset.php?sent_pass_confirm=true");
     } else {
@@ -69,11 +69,11 @@ if (isset($_POST["email"])) {
     	
     //Send reset email
 	$to = $userinforesult["email"];
-    $subject = "Lists » Reset Password";
+    $subject = "Chore » Reset Password";
 	$headers = "MIME-Version: 1.0\r\n";
-    $headers .= "From: Lists Mailer <lists@" . $_SERVER["SERVER_NAME"] . ">\r\n";    
+    $headers .= "From: Chore Mailer <chore@" . $_SERVER["SERVER_NAME"] . ">\r\n";    
 	$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-    $message = "<html><body><p>Hi " . $userinforesult["user"] . ",</p><p>You have requested to reset your Lists password, to do so click <a href=\"$pathtoscript/reset.php?email=$to&hash=$hash\">here</a> and a new password will be emailed to you.</p><p>If you did not initiate this request, simply ignore this email.</p><p>Your welcome!<br>- Lists Mailer</p></html></body>";
+    $message = "<html><body><p>Hi " . $userinforesult["user"] . ",</p><p>You have requested to reset your Chore password, to do so click <a href=\"$pathtoscript/reset.php?email=$to&hash=$hash\">here</a> and a new password will be emailed to you.</p><p>If you did not initiate this request, simply ignore this email.</p><p>Your welcome!<br>- Chore Mailer</p></html></body>";
     if (mail($to, $subject, $message, $headers)) {
         header("Location: reset.php?sent_reset_confirm=true");
     } else {
@@ -90,10 +90,10 @@ if (isset($_POST["email"])) {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="assets/favicon.ico">
-<title>Lists &raquo; Reset</title>
+<title>Chore &raquo; Reset</title>
 <link rel="apple-touch-icon" href="assets/icon.png">
 <link rel="stylesheet" href="assets/bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen">
-<link rel="stylesheet" href="assets/css/lists.css" type="text/css" media="screen">
+<link rel="stylesheet" href="assets/css/chore.css" type="text/css" media="screen">
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -103,7 +103,7 @@ if (isset($_POST["email"])) {
 <body>
 <div class="container">
 <form method="post" class="form-signin">
-<img class="logo-img" src="assets/icon.png" alt="Lists">
+<img class="logo-img" src="assets/icon.png" alt="Chore">
 <?php 
 if (isset($_GET["email_error"])) {
     echo "<div class=\"alert alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>Email does not exist.</div>";

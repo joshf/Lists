@@ -1,13 +1,13 @@
 <?php
 
-//Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
+//Chore, Copyright Josh Fradley (http://github.com/joshf/Chore)
 
 session_start();
 
-unset($_SESSION["lists_user"]);
+unset($_SESSION["chore_user"]);
 
-if (isset($_COOKIE["lists_user_rememberme"])) {
-    setcookie("lists_user_rememberme", "", time()-86400);
+if (isset($_COOKIE["chore_user_rememberme"])) {
+    setcookie("chore_user_rememberme", "", time()-86400);
 }
 
 header("Location: login.php?logged_out=true");
