@@ -1,6 +1,6 @@
 <?php
 
-//Chore, Copyright Josh Fradley (http://github.com/joshf/Chore)
+//Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
 if (!file_exists("config.php")) {
     die("Error: Config file not found!");
@@ -16,15 +16,15 @@ if (mysqli_connect_errno()) {
     die("Error: Could not connect to database (" . mysqli_connect_error() . "). Check your database settings are correct.");
 }
 
-if (isset($_COOKIE["chore_user_rememberme"])) {
-    $hash = $_COOKIE["chore_user_rememberme"];
+if (isset($_COOKIE["lists_user_rememberme"])) {
+    $hash = $_COOKIE["lists_user_rememberme"];
     $getuser = mysqli_query($con, "SELECT `id`, `hash` FROM `users` WHERE `hash` = \"$hash\"");
     if (mysqli_num_rows($getuser) == 0) {
         header("Location: logout.php");
         exit;
     }
     $userinforesult = mysqli_fetch_assoc($getuser);
-    $_SESSION["chore_user"] = $userinforesult["id"];
+    $_SESSION["lists_user"] = $userinforesult["id"];
 }
 
 if (isset($_POST["password"]) && isset($_POST["username"])) {
@@ -39,11 +39,11 @@ if (isset($_POST["password"]) && isset($_POST["username"])) {
     $salt = $userinforesult["salt"];
     $hashedpassword = hash("sha256", $salt . hash("sha256", $password));
     if ($hashedpassword == $userinforesult["password"]) {
-        $_SESSION["chore_user"] = $userinforesult["id"];
+        $_SESSION["lists_user"] = $userinforesult["id"];
         if (isset($_POST["rememberme"])) {
             $hash = substr(str_shuffle(MD5(microtime())), 0, 50);
             mysqli_query($con, "UPDATE `users` SET `hash` = \"$hash\" WHERE `id` = \"" . $userinforesult["id"] . "\"");
-            setcookie("chore_user_rememberme", $hash, time()+3600*24*7);
+            setcookie("lists_user_rememberme", $hash, time()+3600*24*7);
         }
     } else {
         header("Location: login.php?login_error=true");
@@ -51,7 +51,7 @@ if (isset($_POST["password"]) && isset($_POST["username"])) {
     }
 }
 
-if (!isset($_SESSION["chore_user"])) {
+if (!isset($_SESSION["lists_user"])) {
     
 ?>
 <!DOCTYPE html>
@@ -61,10 +61,10 @@ if (!isset($_SESSION["chore_user"])) {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="assets/favicon.ico">
-<title>Chore &raquo; Login</title>
+<title>Lists &raquo; Login</title>
 <link rel="apple-touch-icon" href="assets/icon.png">
 <link rel="stylesheet" href="assets/bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen">
-<link rel="stylesheet" href="assets/css/chore.css" type="text/css" media="screen">
+<link rel="stylesheet" href="assets/css/lists.css" type="text/css" media="screen">
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -74,7 +74,7 @@ if (!isset($_SESSION["chore_user"])) {
 <body>
 <div class="container">
 <form method="post" class="form-signin">
-<img class="logo-img" src="assets/icon.png" alt="Chore">
+<img class="logo-img" src="assets/icon.png" alt="Lists">
 <?php 
 if (isset($_GET["login_error"])) {
     echo "<div class=\"alert alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>Incorrect login.</div>";
