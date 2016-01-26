@@ -128,7 +128,7 @@ if ($action == "add") {
     
 } elseif ($action == "generateapikey") {
     $api_key = substr(str_shuffle(MD5(microtime())), 0, 50);
-    mysqli_query($con, "UPDATE `users` SET `api_key` = \"$api_key\" WHERE `id` = \"" . $_SESSION["indication_user"] . "\"");
+    mysqli_query($con, "UPDATE `users` SET `api_key` = \"$api_key\" WHERE `id` = \"" . $_SESSION["lists_user"] . "\"");
     echo $api_key;
 } else {
     die("Error: Action not recognised!");

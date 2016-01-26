@@ -2,8 +2,6 @@
 
 //Lists, Copyright Josh Fradley (http://github.com/joshf/Lists)
 
-require_once("assets/version.php");
-
 if (!file_exists("config.php")) {
     die("Error: Config file not found!");
 }

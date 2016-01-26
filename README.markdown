@@ -3,6 +3,8 @@ Lists Readme
 
 Lists is a simple app to make lists of things you need to remember. It provides an attractive way to manage multiple lists.
 
+Note: Lists is no longer actively maintained, for a similar product check out [chore](https://github.com/joshf/Chore) 
+
 Features:
 ---------
 
